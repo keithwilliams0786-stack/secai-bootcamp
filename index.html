@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecAI+ CY0-001 Bootcamp — Free Study Tools</title>
+<meta name="description" content="Free interactive bootcamp console and narrated video course for the CompTIA SecAI+ (CY0-001) certification exam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F1C; --panel:#0F1729; --panel-2:#141F38; --line:#22304F;
+  --ink:#E8ECF4; --ink-dim:#8B96AC; --cyan:#5AC8FA; --green:#3DDC84; --amber:#F5B942; --red:#F0555A;
+  --mono:'JetBrains Mono',monospace; --disp:'Space Grotesk',sans-serif; --body:'Inter',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);min-height:100vh;}
+body{
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(90,200,250,0.08), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(61,220,132,0.07), transparent 40%);
+  display:flex; justify-content:center; padding:60px 20px;
+}
+.wrap{max-width:760px; width:100%;}
+.mono{font-family:var(--mono);}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:30px;}
+.brand-mark{
+  width:40px;height:40px;border-radius:9px;background:conic-gradient(from 220deg,var(--cyan),var(--green) 40%,var(--amber) 70%,var(--red) 100%);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;color:#0A0F1C;flex:none;
+}
+.brand-text .t1{font-family:var(--disp);font-weight:700;font-size:16px;}
+.brand-text .t2{font-family:var(--mono);font-size:11px;color:var(--ink-dim);letter-spacing:.06em;}
+
+h1{font-family:var(--disp);font-size:clamp(26px,4vw,38px);margin:0 0 12px;letter-spacing:-.01em;}
+.lede{color:var(--ink-dim);font-size:15px;line-height:1.6;margin-bottom:8px;}
+.lede b{color:var(--ink);}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;
+  padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-dim);margin-bottom:26px;}
+
+.card{
+  display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px;margin-bottom:18px;text-decoration:none;color:inherit;transition:border-color .15s, transform .15s;
+}
+.card:hover{border-color:var(--cyan); transform:translateY(-2px);}
+.card .tag{font-family:var(--mono);font-size:10.5px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;}
+.card h2{font-family:var(--disp);font-size:20px;margin:8px 0 8px;}
+.card p{color:#CBD3E3;font-size:14px;line-height:1.6;margin:0 0 14px;}
+.card ul{margin:0 0 14px;padding-left:18px;color:#CBD3E3;font-size:13.5px;line-height:1.7;}
+.go{font-family:var(--mono);font-size:12.5px;color:var(--green);}
+
+.note{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  font-size:13px;color:var(--ink-dim);line-height:1.6;margin-top:26px;
+}
+.note b{color:var(--ink);}
+
+footer{margin-top:34px;font-size:12px;color:var(--ink-dim);text-align:center;}
+footer a{color:var(--cyan);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-mark">CY0</div>
+    <div class="brand-text"><div class="t1">SECAI+ STUDY TOOLS</div><div class="t2">FREE · SELF-CONTAINED · NO SIGNUP</div></div>
+  </div>
+
+  <h1>CompTIA SecAI+ (CY0-001) Bootcamp</h1>
+  <p class="lede">Two free tools built to prep for the SecAI+ exam, cross-checked against the official Sybex/Wiley study guide by Mike Chapple and Fred Nwanganga. No login, no tracking beyond your own browser's local storage — everything runs client-side.</p>
+  <div class="pill">15 SUB-OBJECTIVES · 83-QUESTION EXAM BANK · UPDATED FROM OFFICIAL STUDY GUIDE</div>
+
+  <a class="card" href="secai-bootcamp.html">
+    <div class="tag">Interactive Console</div>
+    <h2>5-Day Readiness Bootcamp</h2>
+    <p>A self-paced, day-by-day console covering all four exam domains with knowledge checks built in.</p>
+    <ul>
+      <li>47 lecture/lab blocks across a Mon–Fri, 8-hrs/day structure</li>
+      <li>98-card flashcard deck, 14-pair attack↔control matching drill</li>
+      <li>60-question timed final exam simulation, freshly drawn each attempt from an 83-question bank</li>
+      <li>Progress auto-saves in your browser — close it and pick up where you left off</li>
+    </ul>
+    <div class="go">Open the console →</div>
+  </a>
+
+  <a class="card" href="secai-video-course.html">
+    <div class="tag">Watch &amp; Listen</div>
+    <h2>Narrated Video Course</h2>
+    <p>Same material, spoken-lecture format — for listening while driving, working out, or away from a screen.</p>
+    <ul>
+      <li>18 episodes, one per exam sub-objective (plus intro and closing strategy)</li>
+      <li>Captions highlight in sync as each line is narrated</li>
+      <li>Play/pause, scrub, playback speed, voice picker, autoplay</li>
+      <li>Uses your device's built-in text-to-speech — no audio files to download</li>
+    </ul>
+    <div class="go">Open the video course →</div>
+  </a>
+
+  <div class="note">
+    <b>Heads up:</b> CompTIA has not published official per-domain exam weights for CY0-001. Domain 2 (Securing AI Systems) carries 6 of 15 total sub-objectives — confirmed 40% by objective count — and that's what this bootcamp's time allocation is based on. Everything else is cross-referenced against the official study guide, not third-party blog estimates.
+  </div>
+
+  <footer>
+    Built with Claude · <a href="https://github.com/">Source on GitHub</a>
+  </footer>
+</div>
+</body>
+</html>

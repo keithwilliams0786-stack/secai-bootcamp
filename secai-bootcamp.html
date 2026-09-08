@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecAI+ CY0-001 — 5-Day Readiness Bootcamp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0F1C;
+    --panel:#0F1729;
+    --panel-2:#141F38;
+    --line:#22304F;
+    --ink:#E8ECF4;
+    --ink-dim:#8B96AC;
+    --cyan:#5AC8FA;
+    --green:#3DDC84;
+    --amber:#F5B942;
+    --red:#F0555A;
+    --mono:'JetBrains Mono',monospace;
+    --disp:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--body);}
+  body{
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(90,200,250,0.07), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(61,220,132,0.06), transparent 40%);
+    min-height:100vh;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+  a{color:inherit;}
+  .mono{font-family:var(--mono);}
+  .disp{font-family:var(--disp);}
+
+  #app{display:flex;min-height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{
+    width:300px;flex:none;background:linear-gradient(180deg,var(--panel),#0B1220);
+    border-right:1px solid var(--line);padding:22px 18px;position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:8px;background:conic-gradient(from 220deg,var(--cyan),var(--green) 40%,var(--amber) 70%,var(--red) 100%);
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:11px;color:#0A0F1C;flex:none;
+  }
+  .brand-text{line-height:1.15;}
+  .brand-text .t1{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.02em;}
+  .brand-text .t2{font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);letter-spacing:.06em;}
+
+  .gauge-card{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;
+  }
+  .gauge-row{display:flex;align-items:center;gap:14px;}
+  .gauge-ring{width:64px;height:64px;border-radius:50%;flex:none;position:relative;display:flex;align-items:center;justify-content:center;}
+  .gauge-ring .hole{width:46px;height:46px;border-radius:50%;background:var(--panel-2);display:flex;align-items:center;justify-content:center;flex-direction:column;}
+  .gauge-ring .hole b{font-family:var(--mono);font-size:14px;line-height:1;}
+  .gauge-ring .hole span{font-size:8px;color:var(--ink-dim);letter-spacing:.05em;margin-top:2px;}
+  .gauge-label{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+  .gauge-status{font-family:var(--mono);font-weight:700;font-size:13px;}
+
+  .domain-bars{margin-top:14px;display:flex;flex-direction:column;gap:9px;}
+  .dbar-row{display:flex;flex-direction:column;gap:3px;}
+  .dbar-top{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-dim);}
+  .dbar-top .code{font-family:var(--mono);color:var(--ink);}
+  .dbar-track{height:6px;border-radius:4px;background:#1A2740;overflow:hidden;}
+  .dbar-fill{height:100%;border-radius:4px;transition:width .4s ease;}
+
+  nav.navlist{display:flex;flex-direction:column;gap:3px;margin-top:6px;}
+  .navlabel{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin:14px 4px 6px;}
+  .navitem{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;
+    font-size:13px;color:var(--ink-dim);border:1px solid transparent;
+  }
+  .navitem:hover{background:#131E36;color:var(--ink);}
+  .navitem.active{background:#132038;border-color:var(--line);color:var(--ink);}
+  .navitem .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--line);}
+  .navitem .dot.done{background:var(--green);}
+  .navitem .dot.partial{background:var(--amber);}
+  .navitem .idx{font-family:var(--mono);font-size:11px;color:var(--ink-dim);width:16px;flex:none;}
+  .navitem .pct{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);}
+
+  /* ---------- Main ---------- */
+  #main{flex:1;min-width:0;padding:28px 34px 60px;max-width:980px;}
+  .topline{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:22px;}
+  .topline h1{font-family:var(--disp);font-size:26px;margin:0;letter-spacing:-.01em;}
+  .topline .sub{color:var(--ink-dim);font-size:13px;margin-top:4px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;
+    padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-dim);
+  }
+
+  .block{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;
+  }
+  .block-head{
+    display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;user-select:none;
+  }
+  .block-head:hover{background:#111C33;}
+  .chk{
+    width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);flex:none;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;
+  }
+  .chk.on{background:var(--green);border-color:var(--green);}
+  .chk.on:after{content:'✓';font-size:12px;color:#06210F;font-weight:700;}
+  .time{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);width:98px;flex:none;}
+  .btitle{flex:1;min-width:0;}
+  .btitle .name{font-weight:600;font-size:14.5px;}
+  .btitle .tags{margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;}
+  .tag{
+    font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;border:1px solid var(--line);color:var(--ink-dim);
+  }
+  .tag.obj{color:var(--cyan);border-color:rgba(90,200,250,.35);}
+  .tag.lecture{color:var(--ink-dim);}
+  .tag.lab{color:var(--amber);border-color:rgba(245,185,66,.35);}
+  .tag.quiz{color:var(--green);border-color:rgba(61,220,132,.35);}
+  .tag.admin{color:var(--ink-dim);}
+  .caret{color:var(--ink-dim);font-size:12px;flex:none;transition:transform .15s;}
+  .block.open .caret{transform:rotate(90deg);}
+  .block-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .block.open .block-body{max-height:4000px;}
+  .block-inner{padding:0 18px 18px 130px;font-size:13.8px;line-height:1.65;color:#CBD3E3;}
+  .block-inner h4{font-family:var(--disp);font-size:13px;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px;}
+  .block-inner h4:first-child{margin-top:0;}
+  .block-inner ul{margin:0 0 10px;padding-left:18px;}
+  .block-inner li{margin-bottom:4px;}
+  .block-inner p{margin:0 0 10px;}
+  .term-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;}
+  .term-chip{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:6px;background:#0E1830;border:1px solid var(--line);color:var(--cyan);}
+
+  .qcard{background:#0E1830;border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:10px;}
+  .qcard .qtext{font-weight:600;font-size:13.6px;margin-bottom:10px;color:var(--ink);}
+  .opt{
+    display:block;width:100%;text-align:left;padding:9px 12px;margin-bottom:7px;border-radius:8px;
+    background:#0A1224;border:1px solid var(--line);color:var(--ink);font-size:13px;cursor:pointer;font-family:var(--body);
+  }
+  .opt:hover{border-color:var(--cyan);}
+  .opt.correct{background:rgba(61,220,132,.14);border-color:var(--green);color:var(--green);}
+  .opt.wrong{background:rgba(240,85,90,.14);border-color:var(--red);color:var(--red);}
+  .opt[disabled]{cursor:default;}
+  .explain{font-size:12.5px;color:var(--ink-dim);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:none;}
+  .explain.show{display:block;}
+
+  .btn{
+    font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);
+    background:#101B32;color:var(--ink);cursor:pointer;
+  }
+  .btn:hover{border-color:var(--cyan);color:var(--cyan);}
+  .btn.primary{background:var(--cyan);color:#04121F;border-color:var(--cyan);font-weight:700;}
+  .btn.primary:hover{opacity:.9;color:#04121F;}
+  .btn.ghost{background:transparent;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* Flashcards */
+  .fc-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0 30px;}
+  .fc-filterbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:6px;}
+  .fc-scene{width:100%;max-width:520px;height:260px;perspective:1200px;cursor:pointer;}
+  .fc-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s;}
+  .fc-card.flipped{transform:rotateY(180deg);}
+  .fc-face{
+    position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:26px;
+    background:linear-gradient(160deg,#111D36,#0B1526);
+  }
+  .fc-face .k{position:absolute;top:14px;left:16px;font-family:var(--mono);font-size:10px;color:var(--ink-dim);}
+  .fc-face .term{font-family:var(--disp);font-size:21px;font-weight:600;}
+  .fc-face .def{font-size:14px;line-height:1.5;color:#CBD3E3;}
+  .fc-back{transform:rotateY(180deg);}
+  .fc-controls{display:flex;gap:10px;}
+  .fc-progress{font-family:var(--mono);font-size:12px;color:var(--ink-dim);}
+
+  /* Matching drill */
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:14px;}
+  .match-col h4{font-family:var(--disp);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:10px;}
+  .match-item{
+    padding:11px 13px;margin-bottom:8px;border-radius:9px;border:1px solid var(--line);background:#0E1830;
+    font-size:13px;cursor:pointer;transition:.12s;
+  }
+  .match-item:hover{border-color:var(--cyan);}
+  .match-item.sel{border-color:var(--cyan);background:rgba(90,200,250,.12);}
+  .match-item.correct{border-color:var(--green);background:rgba(61,220,132,.14);color:var(--green);cursor:default;}
+  .match-item.wrong-flash{border-color:var(--red);background:rgba(240,85,90,.18);}
+  .match-item.locked{opacity:.55;cursor:default;}
+
+  /* Exam */
+  .exam-shell{display:flex;flex-direction:column;gap:16px;}
+  .exam-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .timer{font-family:var(--mono);font-size:20px;padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);}
+  .timer.low{color:var(--red);border-color:var(--red);}
+  .progress-strip{display:flex;gap:3px;flex-wrap:wrap;}
+  .pdot{width:9px;height:9px;border-radius:2px;background:#1A2740;cursor:pointer;}
+  .pdot.answered{background:var(--cyan);}
+  .pdot.flagged{background:var(--amber);}
+  .pdot.current{outline:2px solid var(--ink);outline-offset:1px;}
+
+  .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+  .rcard{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .rcard .big{font-family:var(--mono);font-size:26px;font-weight:700;}
+  .rcard .lbl{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+
+  .empty{color:var(--ink-dim);font-size:13px;padding:30px 0;text-align:center;}
+
+  @media(max-width:900px){
+    #app{flex-direction:column;}
+    #sidebar{width:100%;height:auto;position:relative;}
+    #main{padding:20px;}
+    .block-inner{padding-left:18px;}
+    .match-grid{grid-template-columns:1fr;}
+    .results-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">CY0</div>
+      <div class="brand-text">
+        <div class="t1">SECAI+ CONSOLE</div>
+        <div class="t2">CY0-001 · 40HR BOOTCAMP</div>
+      </div>
+    </div>
+
+    <div class="gauge-card">
+      <div class="gauge-row">
+        <div class="gauge-ring" id="gaugeRing">
+          <div class="hole"><b id="gaugePct">0%</b><span>READY</span></div>
+        </div>
+        <div style="flex:1;">
+          <div class="gauge-label">Overall readiness</div>
+          <div class="gauge-status" id="gaugeStatus">NOT STARTED</div>
+        </div>
+      </div>
+      <div class="domain-bars" id="domainBars"></div>
+    </div>
+
+    <nav class="navlist" id="navlist"></nav>
+  </aside>
+
+  <main id="main"></main>
+</div>
+
+<script>
+/* ============================== DATA ============================== */
+
+const DOMAINS = {
+  1:{name:"Basic AI Concepts", short:"Basic AI Concepts", weight:17, color:'#5AC8FA'},
+  2:{name:"Securing AI Systems", short:"Securing AI Systems", weight:40, color:'#F0555A'},
+  3:{name:"AI-assisted Security", short:"AI-assisted Security", weight:24, color:'#F5B942'},
+  4:{name:"AI Governance, Risk & Compliance", short:"GRC", weight:19, color:'#3DDC84'}
+};
+
+function q(text, opts, correctIdx, explain, domain){
+  return {text, opts, correctIdx, explain, domain};
+}
+
+const DAYS = [
+{
+  id:1, key:'day1', label:'Day 1 · Monday', title:'Orientation + Domain 1 — Basic AI Concepts',
+  domainFocus:1, dateNote:'08:00–17:00 · 8 hrs',
+  blocks:[
+    {id:'d1b0', time:'08:00–08:30', dur:'30m', type:'admin', obj:null, title:'Mission Briefing: Exam Format & Bootcamp Rules of Engagement',
+      body:`<h4>Exam facts (CY0-001)</h4>
+      <ul>
+        <li>Up to 60 questions, 60 minutes, multiple-choice + performance-based (PBQ)</li>
+        <li>Passing score: 600 on a 100–900 scale (roughly a 65–70% mastery bar)</li>
+        <li>CompTIA has not published official per-domain percentage weights for CY0-001 as of this writing. What <i>is</i> confirmed (verified against the official Sybex/Wiley CY0-001 Study Guide): Domain 2 — Securing AI Systems — carries 6 of the 15 total sub-objectives, exactly 40% by objective count. Domains 1, 3, and 4 each carry 3 objectives (20% each by count). This bootcamp's time allocation is built on that confirmed count, not on an unverified third-party percentage split.</li>
+        <li>Every Domain 2 sub-objective is written as "Given a scenario…" — that's CompTIA's signal it's PBQ territory. You will drill scenarios, not just definitions, all week.</li>
+      </ul>
+      <h4>How this bootcamp is built</h4>
+      <ul>
+        <li>Study time this week is allocated proportional to objective count — Domain 2 gets two full days (6 of 15 objectives), Domain 1 gets one day because it's foundational vocabulary everything else depends on.</li>
+        <li>Each block ends with a knowledge check. Mark blocks complete as you finish — your readiness gauge on the left updates live and is saved automatically (only visible to you).</li>
+        <li>Friday closes with a full 60-question timed simulation (drawn fresh from an 83-question bank) and a go/no-go readiness call before you book the real exam.</li>
+      </ul>`,
+      terms:[], quiz:[]},
+
+    {id:'d1b1', time:'08:30–10:00', dur:'1h30m', type:'lecture', obj:'1.1', title:'AI Types, Training, and Prompt Engineering',
+      body:`<h4>Types of AI (know these cold — compare/contrast is the exam verb here)</h4>
+      <ul>
+        <li><b>Generative AI</b> — produces new content (text, image, code) vs. classic AI that classifies/predicts on existing data</li>
+        <li><b>Machine learning (ML)</b> — systems that improve from data without being explicitly reprogrammed for each task</li>
+        <li><b>Statistical learning</b> — the math foundation under ML: regression, probability-based inference</li>
+        <li><b>Deep learning</b> — ML using multi-layer neural networks</li>
+        <li><b>Transformers</b> — the architecture behind modern LLMs; attention mechanisms let the model weigh relationships across an entire input</li>
+        <li><b>NLP</b> — the broader field of machines processing human language; LLMs/SLMs/GANs are specific implementations</li>
+        <li><b>LLM vs. SLM</b> — Large Language Models are broad, general-purpose, resource-heavy; Small Language Models are narrower, cheaper, often fine-tuned for a specific task or deployed at the edge</li>
+        <li><b>GAN (Generative Adversarial Network)</b> — two networks (generator vs. discriminator) compete; generator improves by trying to fool the discriminator. Common in deepfake generation — ties directly into Domain 3's attack-vector content later this week</li>
+      </ul>
+      <h4>Model training concepts</h4>
+      <ul>
+        <li><b>Supervised learning</b> — trained on labeled data (input/output pairs)</li>
+        <li><b>Unsupervised learning</b> — finds patterns/clusters in unlabeled data</li>
+        <li><b>Reinforcement learning</b> — learns via reward/penalty feedback loops</li>
+        <li><b>Fine-tuning</b> — further training a pre-trained model on a narrower, domain-specific dataset</li>
+        <li><b>Pruning</b> — removing unneeded weights/parameters to shrink a model</li>
+        <li><b>Quantization</b> — reducing numerical precision of weights to shrink size/speed up inference, at some accuracy cost</li>
+      </ul>
+      <h4>Model quality problems and dimensionality techniques (added from official study guide review)</h4>
+      <ul>
+        <li><b>Overfitting</b> — a model performs great on training data but fails to generalize to new examples (memorized instead of learned)</li>
+        <li><b>Underfitting</b> — a model is too simple to capture the real pattern, performing poorly even on training data</li>
+        <li><b>Concept drift</b> — a deployed model's accuracy quietly degrades over time because real-world data has shifted away from what it was trained on (e.g., a phishing-URL classifier trained last year missing this year's new phishing patterns)</li>
+        <li><b>Data imbalance</b> — a training set with far more examples of one class than another, causing poor prediction accuracy for the minority class</li>
+        <li><b>Precision, recall, F1 score</b> — standard model evaluation metrics tested against data the model hasn't seen before</li>
+        <li><b>k-means clustering</b> — a common unsupervised technique for grouping similar data points (e.g., grouping similar network traffic to flag deviations)</li>
+        <li><b>Principal component analysis (PCA)</b> — reduces the number of features in a dataset while preserving key patterns, useful for visualizing high-dimensional data like network traffic features</li>
+      </ul>
+      <h4>Prompt engineering vocabulary</h4>
+      <ul>
+        <li><b>System prompt</b> — sets model behavior/persona, usually not visible to the end user</li>
+        <li><b>User prompt</b> — the input the end user actually types</li>
+        <li><b>Zero-shot</b> — no examples given; <b>one-shot</b> — one example; <b>multi-shot (few-shot)</b> — several examples to steer output format/quality</li>
+        <li><b>Prompt template</b> — a reusable, structured prompt pattern — this becomes a security control later (2.2) when it constrains what a user can inject</li>
+      </ul>
+      <p><b>Exam angle:</b> expect "explain why an LLM differs from an SLM" and "when would you fine-tune vs. prompt-engineer" style questions — the difference is training cost/scope vs. steering an existing model at inference time. Also expect a scenario that describes a model's accuracy quietly dropping months after deployment — that's concept drift, not a training bug.</p>`,
+      terms:['Generative AI','Transformers','LLM','SLM','GAN','Fine-tuning','Pruning','Quantization','Zero/One/Multi-shot','Overfitting','Underfitting','Concept drift','PCA','k-means'],
+      quiz:[
+        q("A security team needs a lightweight model to run on-device for real-time endpoint anomaly scoring with minimal compute. Which best fits?",
+          ["A general-purpose LLM","A small language model (SLM)","A GAN","An unsupervised clustering model"],1,
+          "SLMs are narrower, cheaper, and better suited to constrained/edge deployments than a general-purpose LLM.",1),
+        q("Reducing the numerical precision of a model's weights to shrink its size and speed inference, at some accuracy cost, is called:",
+          ["Pruning","Fine-tuning","Quantization","Zero-shot prompting"],2,
+          "Quantization lowers precision (e.g., 32-bit to 8-bit) to reduce size/latency.",1)
+      ]},
+
+    {id:'d1b2', time:'10:00–10:15', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break. Stand up, hydrate.</p>`, terms:[], quiz:[]},
+
+    {id:'d1b3', time:'10:15–11:45', dur:'1h30m', type:'lecture', obj:'1.2', title:'Data Security & RAG Foundations',
+      body:`<h4>Data hygiene concepts</h4>
+      <ul>
+        <li><b>Lineage</b> — traceable history of where data came from and how it was transformed</li>
+        <li><b>Provenance</b> — the origin/source authenticity of a specific piece of data</li>
+        <li><b>Integrity</b> — assurance data hasn't been altered improperly</li>
+        <li><b>Cleansing</b> — removing errors, duplicates, and inconsistencies before training/use</li>
+        <li><b>Structured data</b> — highly organized, tables/databases, easy to secure. <b>Semi-structured data</b> — has some structure but needs custom validation (emails, log files). <b>Unstructured data</b> — free text, images, video; hardest to govern and makes up most AI training data</li>
+        <li><b>Watermarking</b> — embedding a hidden signal in AI-generated or training content to prove origin/detect misuse</li>
+      </ul>
+      <h4>RAG — Retrieval-Augmented Generation (high-yield exam topic)</h4>
+      <ul>
+        <li>RAG lets a model pull in external/enterprise data at query time instead of relying only on what it was trained on</li>
+        <li><b>Embeddings</b> — numerical vector representations of text/data that capture semantic meaning</li>
+        <li><b>Vector database/storage</b> — stores embeddings for fast similarity search — this is where enterprise data meets model behavior, and it's a real attack surface (data poisoning, unauthorized retrieval)</li>
+        <li>RAG is why "data access controls" (2.3) and "data security controls" (2.4) later this week matter so much — RAG pipelines are a direct pipe from your sensitive data into model output</li>
+      </ul>
+      <p><b>Exam angle:</b> RAG questions often disguise themselves as "why did the chatbot leak internal data?" scenarios — the answer usually traces back to missing access controls on the vector store or retrieval layer, not the model itself.</p>`,
+      terms:['Lineage','Provenance','Watermarking','RAG','Embeddings','Vector database'],
+      quiz:[
+        q("A company's internal chatbot occasionally surfaces confidential HR documents to unauthorized employees. The chatbot uses RAG. Where should the investigation start?",
+          ["The LLM's training data","Access controls on the vector database/retrieval layer","The GAN discriminator","The model's quantization settings"],1,
+          "RAG pulls live enterprise data at query time via the vector store — unauthorized retrieval usually means missing access controls there, not a training-data problem.",1)
+      ]},
+
+    {id:'d1b4', time:'11:45–12:45', dur:'1h', type:'admin', obj:null, title:'Lunch', body:`<p>Full break. No screens if you can help it.</p>`, terms:[], quiz:[]},
+
+    {id:'d1b5', time:'12:45–14:15', dur:'1h30m', type:'lecture', obj:'1.3', title:'Security Throughout the AI Life Cycle',
+      body:`<h4>Life cycle stages (the official study guide breaks this into 8 — know the order, "at which stage should X happen" is classic CompTIA)</h4>
+      <ol>
+        <li><b>Business use case</b> — define the problem/value before touching data or models</li>
+        <li><b>Data collection & preparation</b> — sourcing, consent, cleansing, lineage starts here</li>
+        <li><b>Model development</b> — training the model against the prepared data</li>
+        <li><b>Evaluation</b> — testing against bias, accuracy, and security criteria before anyone trusts the output</li>
+        <li><b>Deployment</b> — releasing into production with guardrails and access controls in place</li>
+        <li><b>Validation</b> — confirming the deployed model performs as expected in the real environment, not just in testing</li>
+        <li><b>Monitoring & maintenance</b> — the life cycle doesn't end at launch; drift, abuse, and new threats have to be watched continuously</li>
+        <li><b>Feedback & iteration</b> — user complaints, review logs, and performance issues feed back into the next round of development</li>
+      </ol>
+      <p><b>Exam angle:</b> a scenario about a team "collecting user complaints and reviewing logs to identify recurring model performance issues" is testing whether you recognize the <i>feedback and iteration</i> stage specifically — don't just default to "monitoring" for every post-deployment activity.</p>
+      <h4>Human-centric design principles</h4>
+      <ul>
+        <li><b>Human-in-the-loop</b> — a human actively participates in the decision/output process</li>
+        <li><b>Human oversight</b> — humans monitor and can intervene, even if not in every transaction</li>
+        <li><b>Human validation</b> — humans verify/approve outputs before they're acted on, especially high-consequence ones</li>
+      </ul>
+      <p><b>Exam angle:</b> a scenario describing "the model auto-approves loan denials with no review" is testing whether you know that's missing human oversight/validation — a life-cycle and governance failure, not just a technical one.</p>`,
+      terms:['Business case','Model evaluation','Deployment','Human-in-the-loop','Human oversight','Human validation'],
+      quiz:[
+        q("An organization deploys a fraud-detection model that automatically freezes accounts with zero human review of flagged cases. This is a gap in:",
+          ["Data lineage","Human oversight/validation","Quantization","Watermarking"],1,
+          "Automated high-consequence actions with no human check violate human-in-the-loop/oversight/validation principles.",1)
+      ]},
+
+    {id:'d1b6', time:'14:15–14:30', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d1b7', time:'14:30–16:00', dur:'1h30m', type:'quiz', obj:'1.1–1.3', title:'Domain 1 Full Knowledge Check',
+      body:`<p>Work through all of Domain 1 in one pass before moving to Domain 2 tomorrow. If you miss 2+ in a row on the same sub-objective, reopen that block above and re-read before continuing.</p>`,
+      terms:[],
+      quiz:[
+        q("What differentiates a transformer architecture from earlier neural network designs relevant to NLP?",
+          ["It only works on images","Attention mechanisms let it weigh relationships across an entire input sequence","It cannot be fine-tuned","It requires no training data"],1,
+          "Attention is the defining mechanism behind transformer-based LLMs.",1),
+        q("A vector database used in a RAG pipeline is best described as:",
+          ["A relational table of user credentials","Storage optimized for similarity search over embeddings","A firewall rule set","A model quantization tool"],1,
+          "Vector stores hold embeddings and support fast similarity/semantic search — the retrieval half of RAG.",1),
+        q("Which life-cycle stage is responsible for establishing data lineage and provenance from the start?",
+          ["Deployment","Data collection","Ongoing monitoring","Business case"],1,
+          "Lineage/provenance tracking begins as data is sourced, i.e., the data collection stage.",1),
+        q("Reinforcement learning is best described as:",
+          ["Training on labeled input/output pairs","Finding clusters in unlabeled data","Learning via reward and penalty feedback","Reducing model precision to save space"],2,
+          "RL uses reward/penalty signals to shape behavior, unlike supervised (labeled) or unsupervised (unlabeled) learning.",1)
+      ]},
+
+    {id:'d1b8', time:'16:00–17:00', dur:'1h', type:'admin', obj:null, title:'Self-Assessment & Gap Log',
+      body:`<p>Open the <b>Objective Tracker</b> tab in the sidebar and rate yourself 1–3 on objectives 1.1, 1.2, and 1.3. Be honest — anything you rate a 1 goes on your Friday remediation list automatically.</p>
+      <p>Tomorrow: Domain 2 begins — 40% of the exam starts now.</p>`, terms:[], quiz:[]}
+  ]
+},
+
+{
+  id:2, key:'day2', label:'Day 2 · Tuesday', title:'Securing AI Systems, Part 1 — Threat Modeling, Controls, Access',
+  domainFocus:2, dateNote:'08:00–17:00 · 8 hrs',
+  blocks:[
+    {id:'d2b0', time:'08:00–08:15', dur:'15m', type:'quiz', obj:null, title:'Warm-up: Domain 1 Recall',
+      body:`<p>Quick recall before diving into Domain 2.</p>`, terms:[],
+      quiz:[q("RAG improves an LLM's output primarily by:",
+        ["Reducing its parameter count","Retrieving external/enterprise data at query time","Converting it into an SLM","Applying reinforcement learning"],1,
+        "Retrieval-Augmented Generation pulls in outside data at inference time rather than relying solely on training data.",1)]},
+
+    {id:'d2b1', time:'08:15–09:45', dur:'1h30m', type:'lecture', obj:'2.1', title:'AI Threat-Modeling Resources',
+      body:`<h4>Know which catalog to reach for — this is a matching skill on the exam</h4>
+      <ul>
+        <li><b>OWASP LLM Top 10</b> — the go-to list of top risks specific to large language model applications (prompt injection, insecure output handling, training data poisoning, etc.)</li>
+        <li><b>OWASP ML Security Top 10</b> — broader machine-learning-specific risks beyond just LLMs</li>
+        <li><b>MITRE ATLAS</b> — the adversarial-AI counterpart to MITRE ATT&CK; catalogs real-world adversary tactics/techniques against AI systems</li>
+        <li><b>MIT AI Risk Repository</b> — a broad academic/industry-sourced database of AI risks across many categories, useful for GRC-adjacent framing</li>
+        <li><b>CVE AI Working Group</b> — extends the standard CVE vulnerability-tracking process to AI-specific vulnerabilities</li>
+      </ul>
+      <p><b>Exam angle:</b> a described weakness, and you pick the framework/entry that models it. If it smells like "adversary tactics/techniques mapped like ATT&CK" → ATLAS. If it's "OWASP-style top risk list for LLM apps" → OWASP LLM Top 10. If it's "a tracked, numbered vulnerability" → CVE AI Working Group.</p>`,
+      terms:['OWASP LLM Top 10','OWASP ML Top 10','MITRE ATLAS','MIT AI Risk Repository','CVE AI Working Group'],
+      quiz:[
+        q("A security architect wants a framework that catalogs real-world adversary tactics and techniques against AI systems, similar in structure to MITRE ATT&CK. Which resource fits?",
+          ["OWASP LLM Top 10","MITRE ATLAS","MIT AI Risk Repository","CVE AI Working Group"],1,
+          "MITRE ATLAS is explicitly the adversarial-AI counterpart to ATT&CK.",2),
+        q("A newly discovered, trackable vulnerability in an open-source ML library should be referenced against:",
+          ["OWASP ML Security Top 10","CVE AI Working Group","MIT AI Risk Repository","OWASP LLM Top 10"],1,
+          "The CVE AI Working Group extends standard CVE tracking to AI-specific vulnerabilities.",2)
+      ]},
+
+    {id:'d2b2', time:'09:45–10:00', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d2b3', time:'10:00–11:30', dur:'1h30m', type:'lecture', obj:'2.2', title:'Security Controls for AI Systems',
+      body:`<h4>Model controls</h4>
+      <ul>
+        <li><b>Guardrails</b> — rules/filters constraining model input/output (blocking disallowed topics, enforcing formats)</li>
+        <li><b>Model evaluation</b> — ongoing testing of the model for accuracy, bias, and security regressions</li>
+        <li><b>Prompt templates</b> — structured, constrained prompt formats that reduce free-text injection surface</li>
+      </ul>
+      <h4>Gateway controls (the chokepoint in front of the model)</h4>
+      <ul>
+        <li><b>Prompt firewall</b> — inspects/filters prompts before they reach the model, similar in spirit to a WAF</li>
+        <li><b>Rate limits</b> — caps requests per time window per user/key</li>
+        <li><b>Token limits</b> — caps the size of input/output to control cost and reduce abuse surface</li>
+        <li><b>Input quotas</b> — overall usage caps over a period</li>
+        <li><b>Modality limits</b> — restricting which input/output types are allowed (e.g., text-only, no image upload)</li>
+        <li><b>Endpoint access controls</b> — who/what can even reach the API endpoint in the first place</li>
+      </ul>
+      <h4>Guardrail testing and validation (added from official study guide review)</h4>
+      <ul>
+        <li><b>Canary strings</b> — unique, planted phrases embedded in training or proprietary data specifically so a team can probe a deployed model afterward and check whether that exact phrase leaks out verbatim — a proactive test for guardrail failure and training-data leakage</li>
+        <li><b>Jailbreak testing</b> — deliberately sending malicious/boundary-pushing prompts to a model in a controlled way to confirm its guardrails actually hold before attackers try the same thing</li>
+      </ul>
+      <p><b>Exam angle:</b> expect requirement-matching PBQs — "given these five requirements, choose the control stack that satisfies them." Model controls shape what the model itself does; gateway controls shape what reaches the model in the first place. Know which layer a given requirement belongs to. A scenario about proactively testing whether proprietary training phrases can be extracted post-deployment is describing canary strings specifically, not just "monitoring."</p>`,
+      terms:['Guardrails','Model evaluation','Prompt templates','Prompt firewall','Rate limits','Token limits','Modality limits','Endpoint ACLs','Canary strings','Jailbreak testing'],
+      quiz:[
+        q("A requirement states: 'Prevent users from uploading images to a text-only support chatbot.' Which control satisfies this?",
+          ["Rate limiting","Modality limits","Token limits","Model evaluation"],1,
+          "Modality limits restrict which input/output types (text, image, audio) are permitted.",2),
+        q("Which control inspects and filters prompts before they ever reach the model, functioning like a WAF for AI traffic?",
+          ["Prompt firewall","Guardrails","Endpoint access control","Model evaluation"],0,
+          "A prompt firewall sits at the gateway layer, filtering input before it reaches the model.",2)
+      ]},
+
+    {id:'d2b4', time:'11:30–12:30', dur:'1h', type:'admin', obj:null, title:'Lunch', body:`<p>Full break.</p>`, terms:[], quiz:[]},
+
+    {id:'d2b5', time:'12:30–14:00', dur:'1h30m', type:'lecture', obj:'2.3', title:'Access Controls for AI Systems',
+      body:`<h4>Four layers of AI access control (the new one is "agent access")</h4>
+      <ul>
+        <li><b>Model access</b> — who/what can invoke the model at all</li>
+        <li><b>Data access</b> — who/what can reach the underlying training data or RAG-connected data stores</li>
+        <li><b>Agent access</b> — what an autonomous AI agent is permitted to touch, execute, or call on its own. This is the layer most candidates haven't thought about before this exam — agents can take actions (file writes, API calls, purchases) without a human approving each step</li>
+        <li><b>Network/API access</b> — traditional network-layer and API-key-based access restriction to the AI service itself</li>
+      </ul>
+      <p><b>Exam angle:</b> if a scenario describes an AI agent doing something it shouldn't have been able to do on its own (deleting records, sending emails, calling external APIs), that's an <b>agent access</b> control failure — tie this forward to "excessive agency" in objective 2.6 tomorrow.</p>`,
+      terms:['Model access','Data access','Agent access','Network/API access'],
+      quiz:[
+        q("An autonomous AI agent with email-sending capability sends unauthorized messages to external recipients without approval. This points to a failure in:",
+          ["Data access controls","Agent access controls","Modality limits","Watermarking"],1,
+          "Agent access controls govern what an autonomous agent is permitted to do/execute on its own — the newest of the four access-control layers.",3)
+      ]},
+
+    {id:'d2b6', time:'14:00–14:15', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d2b7', time:'14:15–15:45', dur:'1h30m', type:'lab', obj:'2.2 / 2.3', title:'Scenario Lab: Design a Control Stack',
+      body:`<p>Work through each scenario and decide which control(s) — model, gateway, or access-layer — satisfy the stated requirement. Write your answer before revealing.</p>
+      <h4>Scenario A</h4>
+      <p>A public-facing customer support chatbot must never process more than 2,000 tokens per conversation, to control cost and reduce prompt-stuffing abuse.</p>
+      <p><i>Answer: Token limits (gateway control).</i></p>
+      <h4>Scenario B</h4>
+      <p>A finance team's internal RAG assistant should only be able to retrieve documents the requesting employee is already authorized to view in the source repository.</p>
+      <p><i>Answer: Data access controls, enforced at the retrieval/vector-store layer — permissions must mirror source-system entitlements, not be looser.</i></p>
+      <h4>Scenario C</h4>
+      <p>An AI coding assistant with repo write-access should not be able to push directly to the production branch without a human-approved pull request.</p>
+      <p><i>Answer: Agent access controls (constrain what the agent can execute) combined with human-in-the-loop/validation (life cycle principle from Day 1).</i></p>
+      <h4>Scenario D</h4>
+      <p>A vendor-hosted LLM API should reject all traffic that doesn't originate from your corporate VPN IP range.</p>
+      <p><i>Answer: Network/API access controls.</i></p>`,
+      terms:[], quiz:[]},
+
+    {id:'d2b8', time:'15:45–17:00', dur:'1h15m', type:'quiz', obj:'2.1–2.3', title:'Knowledge Check + Gap Log',
+      body:`<p>Rate objectives 2.1, 2.2, and 2.3 in the Objective Tracker before logging off. Domain 2 continues tomorrow with data security, monitoring, and the highest-value objective on the whole exam: attack analysis and compensating controls.</p>`,
+      terms:[],
+      quiz:[
+        q("A requirement says: 'Cap the number of API calls any single user can make per minute.' This is:",
+          ["A rate limit","A token limit","An input quota","A modality limit"],0,
+          "Rate limits cap requests per time window; token limits cap the size of a single request/response.",2)
+      ]}
+  ]
+},
+
+{
+  id:3, key:'day3', label:'Day 3 · Wednesday', title:'Securing AI Systems, Part 2 — Data, Monitoring, Attack Analysis',
+  domainFocus:2, dateNote:'08:00–17:00 · 8 hrs · Heaviest PBQ day',
+  blocks:[
+    {id:'d3b0', time:'08:00–08:15', dur:'15m', type:'quiz', obj:null, title:'Warm-up: Domain 2 Recall',
+      body:`<p>Quick recall before continuing Domain 2.</p>`, terms:[],
+      quiz:[q("Which access-control layer governs what an autonomous AI agent is permitted to execute on its own?",
+        ["Network/API access","Agent access","Data access","Model access"],1,"Agent access is the newest and most exam-relevant layer for autonomous systems.",2)]},
+
+    {id:'d3b1', time:'08:15–09:45', dur:'1h30m', type:'lecture', obj:'2.4', title:'Data Security Controls for AI Systems',
+      body:`<h4>Encryption states</h4>
+      <ul>
+        <li><b>In transit</b> — data moving between systems (TLS)</li>
+        <li><b>At rest</b> — data stored on disk</li>
+        <li><b>In use</b> — data actively being processed in memory (the differentiator most candidates forget). Two named technical approaches: <b>confidential computing</b> (secure enclaves — even the cloud provider can't see the raw data) and <b>homomorphic encryption</b> (performing computation directly on encrypted data without ever decrypting it)</li>
+      </ul>
+      <h4>Data-safety toolkit</h4>
+      <ul>
+        <li><b>Anonymization</b> — irreversibly removing identifying information so re-identification is not possible, even if combined with other public data sources</li>
+        <li><b>Pseudonymization</b> — replacing identifying data with a reversible token/key — distinct from anonymization because someone holding the key can still re-identify the person</li>
+        <li><b>Classification labels</b> — tagging data by sensitivity (public/internal/confidential/restricted) so controls can apply automatically</li>
+        <li><b>Redaction</b> — permanently removing sensitive elements from a document/output</li>
+        <li><b>Masking</b> — obscuring data (partial display, e.g., last 4 digits) while the underlying value may still exist elsewhere</li>
+        <li><b>Minimization</b> — collecting/retaining only the data actually needed for the task</li>
+      </ul>
+      <p><b>Exam angle:</b> scenario questions hinge on picking the <i>right technique</i> for a described exposure — e.g., "an LLM output shows partial credit card numbers to a support agent" is masking; "training data must never reveal which real individuals it came from, even combined with outside data" is anonymization, not pseudonymization (which is reversible). "Processed inside a secure enclave so the cloud provider can't see it" is confidential computing specifically; "computed on <i>while still encrypted</i>, never decrypted" is homomorphic encryption.</p>`,
+      terms:['Encryption in transit','Encryption at rest','Encryption in use','Confidential computing','Homomorphic encryption','Anonymization','Pseudonymization','Redaction','Masking','Minimization'],
+      quiz:[
+        q("Protecting data while it is actively being processed in memory during model inference is best described as:",
+          ["Encryption at rest","Encryption in transit","Encryption in use","Data minimization"],2,
+          "Encryption in use (e.g., confidential computing) protects data during active processing — the state most candidates overlook.",2),
+        q("A support dashboard shows only the last four digits of a customer's SSN to agents. This is:",
+          ["Anonymization","Masking","Redaction","Data minimization"],1,
+          "Masking partially obscures a value for display while the full value may still exist in the system.",2)
+      ]},
+
+    {id:'d3b2', time:'09:45–10:00', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d3b3', time:'10:00–11:30', dur:'1h30m', type:'lecture', obj:'2.5', title:'Monitoring & Auditing for AI Systems',
+      body:`<h4>Monitoring (ongoing, real-time posture)</h4>
+      <ul>
+        <li><b>Prompt monitoring</b> — logging/reviewing both queries and responses for abuse or drift</li>
+        <li><b>Log sanitization and protection</b> — logs themselves can contain sensitive prompt content, so they need the same protections as the data they capture</li>
+        <li><b>Response-confidence tracking</b> — watching model confidence scores to catch degrading reliability</li>
+        <li><b>AI cost monitoring</b> — tracking spend across prompts, storage, and processing — unique to AI systems and a real operational/security signal (a cost spike can indicate abuse or a compromised key)</li>
+        <li><b>Cost attribution</b> — a distinct practice from cost monitoring: identifying <i>which team or user</i> is driving spend, so a department generating 70% of monthly token consumption gets flagged specifically, not just "cost is up"</li>
+      </ul>
+      <h4>Three distinct rate-control concepts (frequently conflated — don't)</h4>
+      <ul>
+        <li><b>Rate monitoring</b> — watching for abnormal request patterns that might signal abuse or a malfunctioning client (detection, no action taken)</li>
+        <li><b>Rate limiting</b> — actively rejecting requests once they exceed a defined threshold (a hard stop)</li>
+        <li><b>Throttling</b> — slowing the rate of request processing to preserve availability under heavy load, without outright rejecting requests (a soft response, e.g. absorbing a legitimate demand surge)</li>
+      </ul>
+      <h4>Log and audit-trail integrity controls</h4>
+      <ul>
+        <li><b>Segregation of duties</b> — the same person should not both generate AI outputs and approve them for release without independent oversight</li>
+        <li><b>Append-only logs</b> — a write mechanism (often paired with encryption) that prevents logs from being altered after the fact, protecting audit-trail integrity</li>
+        <li><b>Retention policy enforcement</b> — logs and prompts shouldn't be kept indefinitely; failing to define and enforce a retention window is itself a governance failure regulators will flag</li>
+      </ul>
+      <h4>Auditing (periodic, quality + compliance lens)</h4>
+      <ul>
+        <li><b>Hallucinations</b> — auditing for confidently-stated false outputs</li>
+        <li><b>Accuracy</b> — ongoing validation against ground truth</li>
+        <li><b>Consistency auditing</b> — checking whether the model contradicts itself across similar questions, even when each individual answer is accurate</li>
+        <li><b>Completeness auditing</b> — checking whether outputs are missing required information, not just whether they're wrong</li>
+        <li><b>Bias and fairness</b> — checking for disparate outcomes across groups. Four named subtypes: <b>data bias</b> (skewed training data), <b>representation bias</b> (underrepresented groups), <b>algorithmic bias</b> (the model/algorithm itself), <b>outcome bias</b> (disparate real-world results even with equal inputs)</li>
+        <li><b>Access</b> — auditing who actually used the system and what they touched</li>
+      </ul>
+      <p><b>Exam angle:</b> "cost monitoring" is an easy exam giveaway most candidates don't expect from a security exam — remember it explicitly, it's unique to AI systems. Watch for scenarios that name a specific rate-control word — "the system rejects requests over the threshold" is rate limiting; "the system slows down but keeps serving requests" is throttling; those are two different correct answers to two differently-worded questions.</p>`,
+      terms:['Prompt monitoring','Log sanitization','Response-confidence tracking','AI cost monitoring','Cost attribution','Rate monitoring','Rate limiting','Throttling','Segregation of duties','Append-only logs','Hallucinations','Consistency auditing','Bias and fairness'],
+      quiz:[
+        q("A sudden spike in API spend on an LLM service, unaccompanied by a business reason, is most directly a signal to check via:",
+          ["Bias and fairness auditing","AI cost monitoring","Watermarking","Data minimization review"],1,
+          "AI cost monitoring tracks spend across prompts/storage/processing and can reveal abuse or a compromised key.",2),
+        q("Confidently-stated but factually false model outputs are audited for under the category of:",
+          ["Hallucinations","Log sanitization","Rate monitoring","Data lineage"],0,
+          "Hallucination auditing specifically targets false-but-confident outputs.",2),
+        q("An AI API receives a surge of 10,000 requests per minute during a demand spike. Instead of rejecting requests outright, the system slows down responses to preserve availability. This is:",
+          ["Rate limiting","Throttling","Rate monitoring","Log sanitization"],1,
+          "Throttling slows processing to preserve availability without outright rejecting requests — a softer response than rate limiting.",2),
+        q("Auditors find one internal team responsible for 70% of monthly token consumption, causing cost spikes elsewhere. Which practice identifies this?",
+          ["Rate monitoring","Cost attribution","Accuracy auditing","Log sanitization"],1,
+          "Cost attribution identifies which team or user is driving spend, distinct from cost monitoring which just tracks the total.",2),
+        q("A model gives complete, individually-correct answers but contradicts an earlier response to a very similar question. This is a:",
+          ["Completeness issue","Consistency issue","Hallucination","Bias issue"],1,
+          "Consistency auditing checks whether a model contradicts itself across similar questions, separate from whether any single answer is accurate.",2)
+      ]},
+
+    {id:'d3b4', time:'11:30–12:30', dur:'1h', type:'admin', obj:null, title:'Lunch', body:`<p>Full break — the biggest objective of the exam is right after this.</p>`, terms:[], quiz:[]},
+
+    {id:'d3b5', time:'12:30–15:00', dur:'2h30m', type:'lecture', obj:'2.6', title:'Attack Analysis & Compensating Controls (the single highest-value objective on the exam)',
+      body:`<h4>Attack taxonomy — know each one well enough to recognize it from a described symptom</h4>
+      <ul>
+        <li><b>Prompt injection</b> — malicious instructions smuggled into input to override intended model behavior</li>
+        <li><b>Jailbreaking</b> — techniques to bypass a model's built-in safety/behavior restrictions</li>
+        <li><b>Data poisoning</b> — corrupting training data so the model learns the wrong thing</li>
+        <li><b>Model poisoning</b> — directly tampering with model weights/parameters (vs. the data feeding them)</li>
+        <li><b>Model skewing</b> — a slower, subtler cousin of poisoning: users intentionally feed a model deceptive feedback over time, gradually biasing its behavior in their favor without tripping any single alarm</li>
+        <li><b>Model inversion</b> — reconstructing sensitive training data by probing model outputs</li>
+        <li><b>Model theft</b> — stealing a model's parameters/architecture via systematic extraction queries or direct exfiltration. A quieter variant is <b>indirect model theft</b> — an attacker infers proprietary behavior just from detailed confidence scores returned with every prediction, without ever "stealing" anything directly</li>
+        <li><b>Membership inference</b> — determining whether a specific record was part of the training set (a privacy attack)</li>
+        <li><b>Input manipulation</b> — crafting adversarial inputs (subtly altered images, text, or files) that cause a model to misclassify — the classic example is a modified stop sign an autonomous-vehicle model reads as a yield sign</li>
+        <li><b>AI supply-chain / transfer-learning attacks</b> — when you build on a pretrained model or external dataset, you inherit whatever risk was hidden upstream. A poisoned public model or dataset can persist even after your own fine-tuning and deployment</li>
+        <li><b>Model denial of service</b> — overwhelming a model with expensive queries to exhaust compute/cost/availability</li>
+        <li><b>Insecure output handling</b> — treating model output as trusted/safe and passing it downstream without validation (e.g., into a shell or database query)</li>
+        <li><b>Excessive agency</b> — an AI agent granted more autonomy/permissions than its task requires, enabling unintended actions</li>
+        <li><b>Overreliance</b> — a human trusting model output without verification. Distinct from excessive agency: excessive agency is about what the <i>model/agent</i> can do; overreliance is about what the <i>human</i> fails to check</li>
+      </ul>
+      <h4>Attack → Compensating control mapping (the actual exam skill)</h4>
+      <ul>
+        <li>Prompt injection / jailbreaking → prompt firewalls, guardrails, prompt templates, jailbreak testing</li>
+        <li>Data/model poisoning, model skewing → data integrity controls (cryptographic hashes/checksums), provenance/lineage verification, supply-chain vetting</li>
+        <li>Model theft / indirect model theft / inversion / membership inference → rate limiting, output limiting (suppress detailed confidence scores), differential privacy techniques, access controls</li>
+        <li>Input manipulation → adversarial training (including adversarial examples in the training set to build robustness), input validation</li>
+        <li>AI supply-chain / transfer-learning attacks → vet pretrained models and datasets before adoption, treat upstream sources as untrusted until verified</li>
+        <li>Model DoS → rate limits, token limits, cost monitoring/alerting</li>
+        <li>Insecure output handling → treat model output as untrusted input downstream — validate/sanitize before executing or querying with it</li>
+        <li>Excessive agency → agent access controls, least privilege, human-in-the-loop approval for consequential actions</li>
+        <li>Overreliance → mandatory human review/validation gates on any high-consequence output, not just capability restrictions on the model itself</li>
+      </ul>
+      <p><b>This is the one objective to over-prepare.</b> It's the exam's single largest sub-objective and the most PBQ-heavy. You'll drill attack→control matching in the dedicated console tab this afternoon — now covering all 15 attack types above, not just 11.</p>`,
+      terms:['Prompt injection','Jailbreaking','Data poisoning','Model poisoning','Model skewing','Model inversion','Model theft','Indirect model theft','Membership inference','Input manipulation','Supply-chain attack','Model DoS','Insecure output handling','Excessive agency','Overreliance'],
+      quiz:[
+        q("An application takes an LLM's generated code output and executes it directly without review. An attacker crafts a prompt that causes the model to output malicious shell commands, which then run. This is:",
+          ["Model inversion","Insecure output handling","Membership inference","Data poisoning"],1,
+          "Treating untrusted model output as safe to execute downstream is the definition of insecure output handling.",2),
+        q("An attacker repeatedly queries a deployed model and uses the responses to reconstruct a close approximation of its parameters. This is:",
+          ["Model theft","Jailbreaking","Excessive agency","Model denial of service"],0,
+          "Extracting a model's parameters/behavior via systematic querying is model theft (extraction).",2),
+        q("An AI coding agent with unrestricted repo and cloud-console access deletes a production database while completing an unrelated task. The root cause and best compensating control are:",
+          ["Model DoS; add rate limits","Excessive agency; enforce agent access controls and least privilege","Data poisoning; add data lineage checks","Jailbreaking; add a prompt firewall"],1,
+          "Excessive agency = more autonomy/permissions than the task required; the fix is least-privilege agent access controls and human approval for consequential actions.",2),
+        q("A researcher determines with high confidence that a specific patient's medical record was included in a model's training data, based only on the model's outputs. This is:",
+          ["Membership inference","Model poisoning","Insecure output handling","Model theft"],0,
+          "Membership inference is specifically about determining whether a record was in the training set — a privacy attack.",2),
+        q("A group of users deliberately gives an AI recommendation system misleading feedback during training, gradually causing it to favor their preferred outputs without ever triggering an alarm. This is:",
+          ["Data poisoning","Model skewing","Prompt injection","Model theft"],1,
+          "Model skewing is the slow, feedback-driven bias attack — distinct from data poisoning, which corrupts the training set directly.",2),
+        q("An attacker never directly queries a model's weights, but infers its proprietary decision logic purely from the detailed confidence scores returned with every prediction. This is best described as:",
+          ["Indirect model theft","Membership inference","Insecure output handling","Model DoS"],0,
+          "Indirect model theft extracts proprietary behavior through exposed metadata like confidence scores, without directly exfiltrating the model.",2),
+        q("A stop sign is subtly altered with stickers so that a computer-vision model classifies it as a yield sign. This is:",
+          ["Model poisoning","Input manipulation","Model inversion","Excessive agency"],1,
+          "Input manipulation crafts adversarial inputs to cause misclassification at inference time — the model itself is untouched.",2),
+        q("A hospital's AI triage model occasionally misclassifies urgent cases, and clinicians act on its recommendations without independently verifying them. Which risk does the second half of this scenario illustrate?",
+          ["Excessive agency","Overreliance","Model inversion","Data poisoning"],1,
+          "Overreliance is a human failing to verify model output before acting on it — distinct from excessive agency, which is about what the model/agent itself is permitted to do.",2)
+      ]},
+
+    {id:'d3b6', time:'15:00–15:15', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break before the matching drill.</p>`, terms:[], quiz:[]},
+
+    {id:'d3b7', time:'15:15–16:30', dur:'1h15m', type:'lab', obj:'2.6', title:'Attack ↔ Control Matching Drill',
+      body:`<p>Head to the <b>Attack ↔ Control Drill</b> tab in the sidebar. Work the full set at least twice — once reading carefully, once as fast as you can while staying accurate. Speed matters on a 60-minute exam.</p>`,
+      terms:[], quiz:[]},
+
+    {id:'d3b8', time:'16:30–17:00', dur:'30m', type:'quiz', obj:'2.4–2.6', title:'Domain 2 Full Review + Gap Log',
+      body:`<p>Rate 2.4, 2.5, and 2.6 in the Objective Tracker. Domain 2 is done — you've now covered 40% of the exam. Tomorrow shifts to using AI defensively (Domain 3) and starts governance (Domain 4).</p>`,
+      terms:[],
+      quiz:[
+        q("Corrupting a model's training set so it learns incorrect associations is:",
+          ["Model poisoning","Data poisoning","Model inversion","Model theft"],1,
+          "Data poisoning targets the training data itself; model poisoning tampers with weights/parameters directly.",2)
+      ]}
+  ]
+},
+
+{
+  id:4, key:'day4', label:'Day 4 · Thursday', title:'AI-assisted Security + Governance Structures',
+  domainFocus:3, dateNote:'08:00–17:00 · 8 hrs',
+  blocks:[
+    {id:'d4b0', time:'08:00–08:15', dur:'15m', type:'quiz', obj:null, title:'Warm-up: Domain 2 Recall',
+      body:`<p>One more Domain 2 check before moving on — this material needs to be automatic by exam day.</p>`, terms:[],
+      quiz:[q("A model is flooded with expensive, complex queries specifically to exhaust its compute budget and make it unavailable. This is:",
+        ["Model denial of service","Excessive agency","Membership inference","Insecure output handling"],0,"That's model DoS — mitigated with rate/token limits and cost monitoring.",2)]},
+
+    {id:'d4b1', time:'08:15–09:45', dur:'1h30m', type:'lecture', obj:'3.1', title:'AI-Enabled Tools for Security Tasks',
+      body:`<h4>Tool landscape</h4>
+      <ul>
+        <li>IDE, browser, and CLI plug-ins that embed AI assistance into existing workflows</li>
+        <li>Chatbots and personal assistants for analyst-facing Q&A and triage support</li>
+        <li><b>Model Context Protocol (MCP) servers</b> — a current, exam-relevant way AI assistants connect to external tools/data sources in a standardized way (you're literally using one right now)</li>
+      </ul>
+      <h4>Use cases the exam cares about</h4>
+      <ul>
+        <li><b>Anomaly detection</b> — flags individual events that deviate from a learned baseline (e.g., a login at 3 a.m. from an unusual location)</li>
+        <li><b>Pattern recognition</b> — a distinct, higher-level capability: correlates multiple seemingly benign events across time to surface a coordinated attack that no single event would trigger an alert for</li>
+        <li>Vulnerability analysis, automated penetration testing</li>
+        <li>Incident management and threat modeling support</li>
+        <li>Fraud detection</li>
+        <li>Summarization (turning huge logs/alerts into readable analyst summaries)</li>
+      </ul>
+      <p><b>Exam angle:</b> questions pair a task with the right tool category — "an analyst needs a fast way to summarize a week of SIEM alerts" points to summarization/chatbot tooling, not automated pentesting. Don't confuse anomaly detection (single deviant event) with pattern recognition (correlating many small, individually-normal events into one coordinated picture) — this exact distinction has appeared as a direct compare/contrast question.</p>`,
+      terms:['MCP servers','Anomaly detection','Pattern recognition','Automated pentesting','Fraud detection','Summarization'],
+      quiz:[
+        q("A standardized protocol that lets an AI assistant connect to external tools and data sources is best described as:",
+          ["A GAN","Model Context Protocol (MCP)","A prompt firewall","RAG"],1,"MCP standardizes how AI assistants connect to external tools/data — a current, exam-relevant concept.",3),
+        q("Over a week, an AI tool notices the same external IP slowly accessing multiple servers with valid credentials, extracting small amounts of data from each — no single event triggers an alert, but the combined activity suggests a stealthy attack. This capability is:",
+          ["Anomaly detection","Pattern recognition","Signature matching","Fraud detection"],1,
+          "Pattern recognition correlates multiple individually-benign events into one coordinated finding, distinct from anomaly detection's single-event deviation.",3)
+      ]},
+
+    {id:'d4b2', time:'09:45–10:00', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d4b3', time:'10:00–11:30', dur:'1h30m', type:'lecture', obj:'3.2', title:'How AI Enables or Enhances Attack Vectors',
+      body:`<h4>Offense-side concepts (conceptual/"explain" objective — expect recognition, not simulation). This objective got a full dedicated chapter in the official study guide — treat it accordingly, it's not a throwaway.</h4>
+      <ul>
+        <li><b>Deepfakes</b> — AI-generated synthetic media used for impersonation (voice/video)</li>
+        <li><b>Misinformation vs. disinformation</b> — misinformation is <i>unintentionally</i> spreading false content (people sharing something believing it's real); disinformation is a <i>deliberate</i>, organized attempt to manipulate opinion. Same content, different intent — the exam tests whether you catch which one a scenario describes</li>
+        <li><b>Adversarial networks (GANs) used offensively</b> — attackers use GAN-produced content to evade AI detectors, poison models, or trick decision systems with adversarial patches</li>
+        <li><b>AI-accelerated reconnaissance and social engineering</b> — automating target research and crafting highly personalized phishing/pretexting at scale</li>
+        <li><b>Obfuscation and polymorphic malware</b> — AI rewrites malicious code into endless unique variants that evade signature detection. Named real-world examples: <b>WormGPT</b> and <b>FraudGPT</b> (malicious LLMs built for generating phishing emails and malware scripts), and <b>BlackMamba</b> (malware with no malicious code visible in static analysis — it queries an LLM at runtime to generate a fresh keylogger on the fly)</li>
+        <li><b>Automated data correlation</b> — attackers using AI to stitch together disparate leaked/public data into actionable intelligence, prioritizing the most exploitable targets</li>
+        <li><b>Automated attack generation</b> — AI agents automate an entire intrusion end-to-end: scanning, exploit selection, and execution, letting unskilled attackers run multistep campaigns without writing code</li>
+        <li><b>AI-powered honeypot detection and evasion</b> — attackers use ML to analyze service responses and identify honeypots before engaging. The reverse also happens: attackers build convincing fake honeypots of their own to harvest credentials or malware from researchers</li>
+        <li><b>AI-powered DDoS</b> — AI-driven botnets analyze live traffic conditions and adapt in real time — shifting ports, packet types, and timing based on feedback, making them far harder to block with static rule sets than a traditional DDoS</li>
+      </ul>
+      <p><b>Exam angle:</b> a described incident ("the CFO received a video call that looked and sounded exactly like the CEO authorizing a wire transfer") should trigger immediate recognition: deepfake-enabled impersonation. A viral AI-generated image causing panic with no organized campaign behind it is misinformation; the same image pushed deliberately by a coordinated actor is disinformation — read for intent, not just content.</p>`,
+      terms:['Deepfakes','Misinformation','Disinformation','WormGPT','FraudGPT','BlackMamba','AI-accelerated recon','Obfuscation','Automated data correlation','Automated attack generation','AI-powered DDoS','Honeypot evasion'],
+      quiz:[
+        q("A finance employee receives a highly convincing video call appearing to be the CEO, requesting an urgent wire transfer. This attack is most accurately described as:",
+          ["Model inversion","Deepfake-enabled impersonation","Data poisoning","Model theft"],1,
+          "Synthetic video/voice impersonation used to manipulate a person is deepfake-enabled impersonation.",3),
+        q("An AI-generated image of a bridge collapse goes viral and causes panic, but no organized campaign is behind it — people simply believed it was real and shared it. This is:",
+          ["Disinformation","Misinformation","Deepfake impersonation","Model inversion"],1,
+          "No deliberate coordinated intent = misinformation. The same content pushed intentionally by an organized actor would be disinformation.",3),
+        q("Malware is found to contain no malicious instructions under static analysis, but at runtime it queries an LLM to generate a fresh keylogger. This defensive challenge best represents:",
+          ["Polymorphic malware","A missing digital signature","Legacy software risk","Unencrypted communication"],0,
+          "This is the BlackMamba pattern — AI-generated payloads at runtime evade static signature detection, a form of polymorphic malware.",3),
+        q("A botnet dynamically shifts its target ports, packet types, and timing based on real-time traffic feedback during an attack, evading static block lists. This is:",
+          ["Automated data correlation","AI-powered DDoS","Model denial of service","Automated attack generation"],1,
+          "AI-powered DDoS specifically adapts attack parameters in real time based on live conditions, unlike a traditional static-pattern DDoS.",3)
+      ]},
+
+    {id:'d4b4', time:'11:30–12:30', dur:'1h', type:'admin', obj:null, title:'Lunch', body:`<p>Full break.</p>`, terms:[], quiz:[]},
+
+    {id:'d4b5', time:'12:30–14:00', dur:'1h30m', type:'lecture', obj:'3.3', title:'Using AI to Automate Security Tasks',
+      body:`<h4>Automation in practice</h4>
+      <ul>
+        <li><b>Three tiers, not two</b> — <b>no-code</b> platforms use only visual/natural-language interfaces with zero scripting; <b>low-code</b> platforms allow some scripting for flexibility on top of visual tools; full <b>scripting</b> environments give complete programmatic control. AI lowers the barrier at every tier by generating scripts from natural language</li>
+        <li>Document synthesis (turning raw findings into polished reports — sound familiar?)</li>
+        <li>Incident-ticket management and triage automation</li>
+        <li>AI-assisted change management — assessing proposed changes, auto-approving routine updates, recommending rollbacks, monitoring for unexpected behavior during deployment</li>
+        <li>AI agents performing multi-step security work autonomously — the key differentiator from a plain automation script: an agent can plan, adapt, and act independently within its guardrails, not just follow a fixed predetermined sequence</li>
+        <li><b>AI in CI/CD pipelines</b> — intelligent code scanning, software composition analysis (SCA), dependency analysis, unit/regression test generation, and model testing gates before deployment</li>
+        <li><b>Static vs. dynamic code analysis</b> — static analysis examines code without running it (spotting insecure patterns, hardcoded secrets); dynamic analysis observes the application's actual live behavior. Both show up in AI-assisted CI/CD pipelines</li>
+        <li><b>Automated rollback</b> — a distinct CI/CD capability: AI monitors live performance metrics after deployment and automatically reverts to the prior version if error rates or response times spike, alerting the team</li>
+      </ul>
+      <p><b>Exam angle:</b> if you've never watched an AI agent triage a ticket queue or gate a CI/CD pipeline on a failed model test, this is the section to review with extra care. Watch for the "no-code has zero scripting, low-code allows some" distinction specifically — it's a clean either/or the exam likes to test.</p>`,
+      terms:['No-code','Low-code','Scripting','Document synthesis','AI-assisted change management','AI agents','CI/CD code scanning','SCA','Static analysis','Dynamic analysis','Automated rollback'],
+      quiz:[
+        q("A CI/CD pipeline automatically blocks a deployment when a new model version fails an automated bias/accuracy test gate. This is an example of:",
+          ["Excessive agency","AI in CI/CD (model testing gate)","Model denial of service","Data poisoning"],1,
+          "Automated model-testing gates inside CI/CD pipelines are a core AI-assisted security automation use case.",3),
+        q("Which correctly distinguishes no-code from low-code automation platforms?",
+          ["No-code platforms are inherently AI-driven, low-code is not","Low-code platforms allow some scripting for flexibility; no-code platforms use only visual/natural-language interfaces with no scripting at all","No-code always performs faster than low-code","Low-code cannot integrate AI assistants"],1,
+          "No-code = zero scripting, visual/NL only. Low-code = visual tools plus some scripting flexibility.",3),
+        q("Shortly after a new deployment, an AI system detects a sharp rise in error rates and response times, automatically reverts to the prior version, and alerts DevOps and security. This capability is:",
+          ["Static code analysis","Automated rollback","Unit testing","Dynamic code analysis"],1,
+          "Automated rollback is the CI/CD capability of monitoring live post-deploy metrics and automatically reverting on failure.",3),
+        q("What differentiates an AI agent from a traditional automation script in a security context?",
+          ["Agents always require human approval before any action","Scripts use machine learning; agents do not","An agent can plan, adapt, and act independently within its scope rather than following a fixed sequence","Agents cannot be used in CI/CD pipelines"],2,
+          "The defining trait of an agent vs. a script is autonomous planning/adaptation within guardrails, not just fixed rule-following.",3)
+      ]},
+
+    {id:'d4b6', time:'14:00–14:15', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break.</p>`, terms:[], quiz:[]},
+
+    {id:'d4b7', time:'14:15–15:15', dur:'1h', type:'lecture', obj:'4.1', title:'Governance Structures That Support AI',
+      body:`<h4>Three governance structures (not just one — this was previously under-covered)</h4>
+      <ul>
+        <li><b>Centralized Center of Excellence (CoE)</b> — one team sets standards, manages the platform, and supports project teams directly</li>
+        <li><b>Hub-and-spoke</b> — as programs mature, many shift here: the CoE (hub) provides shared resources/oversight while business units (spokes) drive their own execution</li>
+        <li><b>Embedded</b> — AI roles live fully inside product teams with only a light central coordination layer. Trade-off: faster delivery, but higher risk of duplicate effort and inconsistent controls across teams</li>
+        <li><b>AI policies and procedures</b> — the formal documented rules governing acceptable AI use, development, and deployment</li>
+      </ul>
+      <h4>Roles (know who does what — match-the-responsibility questions)</h4>
+      <ul>
+        <li><b>Data scientist</b> — builds/analyzes models and data pipelines</li>
+        <li><b>Data engineer</b> — a distinct role from data scientist: builds/maintains the data pipelines themselves, owns data quality and data lineage for training datasets</li>
+        <li><b>AI architect</b> — designs the end-to-end AI system architecture, including model type choices and integration approach</li>
+        <li><b>ML engineer</b> — builds/productionizes ML models and pipelines</li>
+        <li><b>MLOps engineer</b> — owns the operational deployment/monitoring pipeline for models (the ML equivalent of DevOps)</li>
+        <li><b>AI security architect</b> — designs security controls specific to AI systems</li>
+        <li><b>AI governance engineer</b> — implements governance tooling/processes</li>
+        <li><b>AI risk analyst</b> — assesses/quantifies AI-related risk, conducts privacy impact assessments before project approval</li>
+        <li><b>AI auditor</b> — independently reviews AI systems for compliance/quality</li>
+      </ul>
+      <p><b>Exam angle:</b> "who is responsible for X" questions are common — e.g., ongoing model monitoring/deployment pipeline health = MLOps engineer; independent compliance review = AI auditor; data pipeline quality and lineage specifically (not model-building) = data engineer, not data scientist. On structure questions, "fully decentralized with minimal central coordination" is describing the embedded model and its main risk is duplicate/inconsistent controls, not slow delivery.</p>`,
+      terms:['AI Center of Excellence','Hub-and-spoke','Embedded model','Data engineer','MLOps engineer','AI security architect','AI governance engineer','AI risk analyst','AI auditor'],
+      quiz:[
+        q("Which role is most directly responsible for the operational health of a model's deployment and monitoring pipeline?",
+          ["AI auditor","MLOps engineer","AI risk analyst","Data scientist"],1,
+          "MLOps engineers own operational deployment/monitoring — the ML equivalent of DevOps.",4),
+        q("An organization embeds AI developers directly within each product team with minimal central coordination. Which risk does this structure carry?",
+          ["Excessive oversight slowing every project","Duplicate efforts and inconsistent controls across teams","Overreliance on a single Center of Excellence","Reduced ability to move quickly"],1,
+          "The embedded model trades central consistency for speed — its main risk is duplicated effort and inconsistent controls, not slowness.",4),
+        q("A team member builds and maintains data pipelines, ensures data quality, and manages data lineage for AI training datasets. This role is:",
+          ["Data scientist","Data engineer","MLOps engineer","AI architect"],1,
+          "Data engineer is distinct from data scientist — pipeline/quality/lineage ownership is the data engineer's job specifically.",4)
+      ]},
+
+    {id:'d4b8', time:'15:15–16:30', dur:'1h15m', type:'quiz', obj:'3.1–4.1', title:'Knowledge Check',
+      body:`<p>Mixed review covering Domain 3 and the start of Domain 4.</p>`,
+      terms:[],
+      quiz:[
+        q("An organization stands up a centralized team to set AI strategy, standards, and oversight across all business units. This is an example of:",
+          ["An AI Center of Excellence","An MCP server","A prompt firewall","Model context poisoning"],0,
+          "A centralized AI strategy/standards/oversight function is the definition of an AI CoE.",4)
+      ]},
+
+    {id:'d4b9', time:'16:30–17:00', dur:'30m', type:'admin', obj:null, title:'Gap Log',
+      body:`<p>Rate objectives 3.1, 3.2, 3.3, and 4.1 in the Objective Tracker. Friday closes GRC and runs the full simulation.</p>`, terms:[], quiz:[]}
+  ]
+},
+
+{
+  id:5, key:'day5', label:'Day 5 · Friday', title:'GRC Finish + Full Practice Exam + Readiness Decision',
+  domainFocus:4, dateNote:'08:00–17:00 · 8 hrs',
+  blocks:[
+    {id:'d5b0', time:'08:00–08:15', dur:'15m', type:'quiz', obj:null, title:'Warm-up: Domain 3 Recall',
+      body:`<p>Final recall check before GRC and the simulation.</p>`, terms:[],
+      quiz:[q("AI-accelerated reconnaissance most directly enhances which phase of a traditional attack?",
+        ["Post-exploitation cleanup","Target research/information gathering","Patch management","Model retraining"],1,
+        "AI automates and scales research/recon against targets before an attack is launched.",3)]},
+
+    {id:'d5b1', time:'08:15–09:15', dur:'1h', type:'lecture', obj:'4.2', title:'Risks Associated with AI',
+      body:`<h4>Responsible-AI principles (the "why" behind every risk below)</h4>
+      <ul>
+        <li>Fairness, reliability &amp; safety, transparency, privacy, explainability, inclusiveness, accountability, and <b>consistency</b> — eight principles total (consistency is the one most study materials leave off the list, and it means the model behaves predictably given similar inputs, not just accurately)</li>
+      </ul>
+      <h4>Practical risk list</h4>
+      <ul>
+        <li><b>Bias introduction</b> — model outputs systematically disadvantage a group</li>
+        <li><b>Accidental data leakage</b> — sensitive data unintentionally surfaced in output</li>
+        <li><b>Reputational damage</b> — public-facing AI failures damaging brand trust</li>
+        <li><b>Model accuracy drift</b> — performance degrading over time as real-world data shifts from training data</li>
+        <li><b>IP risk</b> — training on or generating content that infringes intellectual property</li>
+        <li><b>Autonomous-system risk</b> — risk introduced specifically by systems acting without direct human control</li>
+        <li><b>Shadow AI</b> — unsanctioned AI tool use inside the business, the modern version of shadow IT, and an easy scenario for exam writers (an employee pastes confidential data into a public chatbot the company never approved)</li>
+      </ul>
+      <p><b>Exam angle:</b> memorize "shadow AI" by name — it's a near-guaranteed appearance and easy to mix up with sanctioned/unsanctioned tooling from 4.3 below.</p>`,
+      terms:['Bias introduction','Model accuracy drift','IP risk','Autonomous-system risk','Shadow AI'],
+      quiz:[
+        q("An employee pastes confidential contract terms into a free public AI chatbot that was never approved by IT. This is best described as:",
+          ["Model accuracy drift","Shadow AI","Membership inference","Data poisoning"],1,
+          "Unsanctioned AI tool use inside the business is shadow AI — the modern equivalent of shadow IT.",4)
+      ]},
+
+    {id:'d5b2', time:'09:15–10:15', dur:'1h', type:'lecture', obj:'4.3', title:'Compliance Impact on AI Use & Development',
+      body:`<h4>Regulatory map (know which applies where, not the statute text)</h4>
+      <ul>
+        <li><b>EU AI Act</b> — the only <i>legally binding</i> regulation on this list; risk-tiered for AI systems touching the EU market. Four tiers, worth knowing by name: <b>unacceptable risk</b> (prohibited outright — e.g., social scoring systems), <b>high risk</b> (heavy obligations: documentation, transparency, human oversight, impact assessments), <b>limited risk</b> (lighter obligations — e.g., a general chatbot must disclose it's AI and offer a path to a human), <b>minimal risk</b> (no special obligations)</li>
+        <li><b>NIST AI Risk Management Framework (AI RMF)</b> — U.S. voluntary (not legally binding) framework for managing AI risk (govern/map/measure/manage functions)</li>
+        <li><b>ISO AI standards</b> — international standards for AI management systems, risk, safety, and system life cycles</li>
+        <li><b>OECD AI standards</b> — international principles for trustworthy AI (transparency, robustness, accountability)</li>
+      </ul>
+      <h4>Corporate AI policy document hierarchy (a real distinction the exam tests — don't treat these as interchangeable)</h4>
+      <ul>
+        <li><b>Policy</b> — the top-level statement of what's allowed and why (e.g., "AI tools must not process unencrypted customer data")</li>
+        <li><b>Standard</b> — the specific, measurable bar every implementation must meet ("data must be encrypted before use in any AI training")</li>
+        <li><b>Procedure</b> — the step-by-step "how" for meeting the standard</li>
+        <li><b>Guideline</b> — recommended but flexible/non-mandatory practice</li>
+      </ul>
+      <h4>Corporate-policy dimensions</h4>
+      <ul>
+        <li>Sanctioned vs. unsanctioned tools (ties directly to shadow AI above)</li>
+        <li>Private vs. public models — a company choosing between a public AI service and an in-house model for sensitive customer data is making a private-vs-public-model decision specifically, distinct from the sanctioned/unsanctioned question</li>
+        <li>Sensitive-data governance for AI-connected systems</li>
+        <li>Third-party compliance evaluations before adopting vendor AI tools</li>
+        <li>Data sovereignty — where data physically resides and which jurisdiction's law applies</li>
+      </ul>
+      <p><b>Exam angle:</b> you don't need statute-level memorization — you need to know which framework/category applies to a described situation ("a US federal contractor needs a structured way to govern AI risk" → NIST AI RMF; "which of these is legally binding" → EU AI Act, the others are voluntary/international-principle frameworks). A scenario naming a specific document ("Data should be encrypted before being used in any AI training") that reads like a measurable bar is describing a standard, not a policy.</p>`,
+      terms:['EU AI Act','Unacceptable risk','High risk','NIST AI RMF','ISO AI standards','OECD standards','Policy','Standard','Procedure','Guideline','Data sovereignty'],
+      quiz:[
+        q("A US-based organization wants a voluntary, structured framework to govern, map, measure, and manage AI risk. Which is the best fit?",
+          ["EU AI Act","NIST AI Risk Management Framework","OECD standards","ISO 27001"],1,"NIST AI RMF is the US voluntary framework built around govern/map/measure/manage functions.",4),
+        q("Which of the following is the only legally binding regulation focused specifically on AI?",
+          ["NIST AI RMF","OECD AI guidelines","ISO AI standards","EU AI Act"],3,
+          "The EU AI Act is legally binding; NIST RMF, OECD, and ISO are voluntary/international-principle frameworks.",4),
+        q("Under the EU AI Act's risk tiers, a government social scoring system would most likely be classified as:",
+          ["Minimal risk","Limited risk","High risk","Unacceptable risk (prohibited)"],3,
+          "Social scoring systems are a named example of the EU AI Act's unacceptable-risk tier, which is prohibited outright.",4),
+        q("An internal document states: 'Data should be encrypted before being used in any AI training.' What type of document most likely contains this sentence?",
+          ["Policy","Standard","Procedure","Guideline"],1,
+          "A specific, measurable, mandatory bar like this is a standard — the step-by-step how-to would be the procedure.",4),
+        q("A company must decide between using a publicly available AI service or developing a model in-house for analyzing sensitive customer data. This decision most directly relates to:",
+          ["Sanctioned vs. unsanctioned AI tools","Private vs. public AI model usage","Data minimization","Incident response planning"],1,
+          "This is specifically the private-vs-public-model policy dimension, not the sanctioned/unsanctioned tools question.",4)
+      ]},
+
+    {id:'d5b3', time:'10:15–10:30', dur:'15m', type:'admin', obj:null, title:'Break', body:`<p>Short break before final review.</p>`, terms:[], quiz:[]},
+
+    {id:'d5b4', time:'10:30–11:30', dur:'1h', type:'quiz', obj:'3.0 / 4.0', title:'Domain 3 + 4 Full Review',
+      body:`<p>Mixed review across AI-assisted Security and GRC before lunch and the full simulation.</p>`,
+      terms:[],
+      quiz:[
+        q("A regulatory framework that applies risk tiers to AI systems operating within the EU is:",
+          ["NIST AI RMF","EU AI Act","OECD standards","MITRE ATLAS"],1,"The EU AI Act is the EU's risk-tiered AI regulation.",4),
+        q("Using AI to auto-generate an incident summary report from raw SIEM alert data is an example of:",
+          ["Document synthesis","Model inversion","Excessive agency","Data poisoning"],0,"Turning raw data into readable reports is document synthesis, an AI-assisted security automation task.",3)
+      ]},
+
+    {id:'d5b5', time:'11:30–12:30', dur:'1h', type:'admin', obj:null, title:'Lunch', body:`<p>Full break — eat before the timed simulation. Treat this like exam day.</p>`, terms:[], quiz:[]},
+
+    {id:'d5b6', time:'12:30–13:30', dur:'1h', type:'lab', obj:'ALL', title:'FULL PRACTICE EXAM — 60 Questions, 60 Minutes, Timed',
+      body:`<p>Go to the <b>Final Exam Simulation</b> tab in the sidebar. Treat this exactly like exam day: no notes, no going back to today's material, timer running. 60 questions are freshly drawn each attempt from an 83-question bank, weighted to match the real blueprint (Domain 2 heaviest, Domain 1 lightest).</p>`,
+      terms:[], quiz:[]},
+
+    {id:'d5b7', time:'13:30–14:30', dur:'1h', type:'admin', obj:null, title:'Exam Review',
+      body:`<p>Review your results screen from the simulation. For every missed question, reread the explanation, then jump back to the relevant day/block using the objective code shown.</p>`, terms:[], quiz:[]},
+
+    {id:'d5b8', time:'14:30–16:00', dur:'1h30m', type:'lab', obj:null, title:'Targeted Remediation',
+      body:`<p>Work only your weak domains — the ones your simulation results flagged below your target score. Re-run the domain-specific knowledge checks from earlier in the week, and redo the Attack ↔ Control drill if Domain 2 was a weak spot (it's the highest-leverage single exercise all week).</p>`, terms:[], quiz:[]},
+
+    {id:'d5b9', time:'16:00–17:00', dur:'1h', type:'admin', obj:null, title:'Final Readiness Self-Assessment & Go/No-Go',
+      body:`<h4>Go/No-Go criteria before booking CY0-001</h4>
+      <ul>
+        <li>Simulation score consistently at or above ~75% (a comfortable margin above the 600/900 passing bar, which is roughly 65–70%)</li>
+        <li>No sub-objective self-rated below a 2 in the Objective Tracker</li>
+        <li>You can explain, from memory, the attack→control mapping for at least 8 of the 11 attack types in 2.6</li>
+      </ul>
+      <h4>If you're not there yet</h4>
+      <p>Don't book the exam this week. Spend 2–3 more focused sessions on your flagged weak domains using the console's Flashcards and Attack↔Control drill, then re-run the Final Exam Simulation once more before scheduling with Pearson VUE.</p>
+      <h4>If you are ready</h4>
+      <p>Book CY0-001 through your CompTIA/Pearson VUE account. Bring a government-issued photo ID and confirm your testing center or online-proctoring setup 24 hours ahead.</p>`, terms:[], quiz:[]}
+  ]
+}
+];
+
+/* ---------- Flashcards ---------- */
+const FLASHCARDS = [
+ {d:1,t:"Generative AI",def:"AI that produces new content (text, image, code) rather than only classifying/predicting on existing data."},
+ {d:1,t:"Transformer",def:"Neural network architecture using attention mechanisms to weigh relationships across an entire input — the basis of modern LLMs."},
+ {d:1,t:"LLM vs. SLM",def:"Large Language Model: broad, general-purpose, resource-heavy. Small Language Model: narrower, cheaper, often fine-tuned/edge-deployed."},
+ {d:1,t:"GAN",def:"Generative Adversarial Network — a generator and discriminator compete; common in deepfake generation."},
+ {d:1,t:"Fine-tuning",def:"Further training a pre-trained model on a narrower, domain-specific dataset."},
+ {d:1,t:"Quantization",def:"Reducing numerical precision of model weights to shrink size/speed inference, at some accuracy cost."},
+ {d:1,t:"Pruning",def:"Removing unneeded weights/parameters to shrink a model."},
+ {d:1,t:"Zero/One/Multi-shot",def:"Prompting with zero, one, or several examples to steer model output format/quality."},
+ {d:1,t:"Data lineage",def:"Traceable history of where data came from and how it was transformed."},
+ {d:1,t:"Data provenance",def:"The origin/source authenticity of a specific piece of data."},
+ {d:1,t:"Watermarking",def:"Embedding a hidden signal in AI-generated/training content to prove origin or detect misuse."},
+ {d:1,t:"RAG",def:"Retrieval-Augmented Generation — retrieving external/enterprise data at query time to augment model output."},
+ {d:1,t:"Embeddings",def:"Numerical vector representations of text/data capturing semantic meaning."},
+ {d:1,t:"Human-in-the-loop",def:"A human actively participates in the decision/output process."},
+ {d:1,t:"Human oversight",def:"Humans monitor and can intervene, even if not in every transaction."},
+ {d:1,t:"Overfitting",def:"A model performs well on training data but fails to generalize to new, unseen examples."},
+ {d:1,t:"Underfitting",def:"A model is too simple to capture the real pattern, performing poorly even on training data."},
+ {d:1,t:"Concept drift",def:"A deployed model's accuracy quietly degrades as real-world data shifts away from its training data."},
+ {d:1,t:"Data imbalance",def:"A training set with far more examples of one class than another, hurting minority-class accuracy."},
+ {d:1,t:"Precision, recall, F1",def:"Standard model evaluation metrics tested against data the model hasn't seen before."},
+ {d:1,t:"PCA",def:"Principal component analysis — reduces dataset dimensionality while preserving key patterns."},
+ {d:1,t:"k-means clustering",def:"An unsupervised technique for grouping similar data points, e.g. flagging anomalous network traffic."},
+ {d:1,t:"Semi-structured data",def:"Has some structure but needs custom validation — e.g. emails, log files. Between structured and unstructured."},
+
+ {d:2,t:"OWASP LLM Top 10",def:"Top risks specific to LLM applications: prompt injection, insecure output handling, training data poisoning, and more."},
+ {d:2,t:"MITRE ATLAS",def:"Adversarial-AI counterpart to MITRE ATT&CK — catalogs real-world adversary tactics/techniques against AI systems."},
+ {d:2,t:"CVE AI Working Group",def:"Extends standard CVE vulnerability tracking to AI-specific vulnerabilities."},
+ {d:2,t:"Guardrails",def:"Rules/filters constraining model input/output."},
+ {d:2,t:"Prompt firewall",def:"Inspects/filters prompts before they reach the model — a gateway control, WAF-like for AI traffic."},
+ {d:2,t:"Rate limits",def:"Caps requests per time window per user/key."},
+ {d:2,t:"Token limits",def:"Caps the size of input/output to control cost and reduce abuse surface."},
+ {d:2,t:"Modality limits",def:"Restricting which input/output types are allowed (text-only, no image, etc.)."},
+ {d:2,t:"Agent access control",def:"Governs what an autonomous AI agent is permitted to touch, execute, or call on its own."},
+ {d:2,t:"Encryption in use",def:"Protecting data while actively processed in memory — e.g., confidential computing/secure enclaves."},
+ {d:2,t:"Masking",def:"Partially obscuring data for display (e.g., last 4 digits) while the full value may still exist elsewhere."},
+ {d:2,t:"Redaction",def:"Permanently removing sensitive elements from a document or output."},
+ {d:2,t:"Data minimization",def:"Collecting/retaining only the data actually needed for the task."},
+ {d:2,t:"AI cost monitoring",def:"Tracking spend across prompts, storage, and processing — a unique AI security/operational signal."},
+ {d:2,t:"Prompt injection",def:"Malicious instructions smuggled into input to override intended model behavior."},
+ {d:2,t:"Jailbreaking",def:"Techniques to bypass a model's built-in safety/behavior restrictions."},
+ {d:2,t:"Data poisoning",def:"Corrupting training data so the model learns the wrong thing."},
+ {d:2,t:"Model poisoning",def:"Directly tampering with model weights/parameters."},
+ {d:2,t:"Model inversion",def:"Reconstructing sensitive training data by probing model outputs."},
+ {d:2,t:"Model theft",def:"Stealing a model's parameters/architecture via extraction queries or direct exfiltration."},
+ {d:2,t:"Membership inference",def:"Determining whether a specific record was part of a model's training set."},
+ {d:2,t:"AI supply-chain attack",def:"Compromising a model, dataset, or dependency before it reaches you."},
+ {d:2,t:"Model denial of service",def:"Overwhelming a model with expensive queries to exhaust compute/cost/availability."},
+ {d:2,t:"Insecure output handling",def:"Treating model output as trusted and passing it downstream without validation."},
+ {d:2,t:"Excessive agency",def:"An AI agent granted more autonomy/permissions than its task requires."},
+ {d:2,t:"Overreliance",def:"A human trusting model output without verification — distinct from excessive agency, which is about the model/agent."},
+ {d:2,t:"Model skewing",def:"Users deliberately feed a model deceptive feedback over time, gradually biasing it without tripping alarms."},
+ {d:2,t:"Indirect model theft",def:"Inferring a model's proprietary behavior from exposed metadata like confidence scores, without direct exfiltration."},
+ {d:2,t:"Input manipulation",def:"Crafting adversarial inputs (subtly altered images/text) that cause a model to misclassify."},
+ {d:2,t:"Pseudonymization",def:"Replacing identifiers with a reversible token/key — unlike anonymization, someone with the key can re-identify."},
+ {d:2,t:"Homomorphic encryption",def:"Performing computation directly on encrypted data without ever decrypting it."},
+ {d:2,t:"Canary strings",def:"Unique planted phrases used to proactively test whether guardrails leak training data verbatim."},
+ {d:2,t:"Jailbreak testing",def:"Deliberately sending boundary-pushing prompts in a controlled way to confirm guardrails hold."},
+ {d:2,t:"Rate limiting vs. throttling",def:"Rate limiting rejects requests over a threshold; throttling slows processing without rejecting."},
+ {d:2,t:"Cost attribution",def:"Identifying which team/user is driving AI spend — distinct from cost monitoring, which tracks the total."},
+ {d:2,t:"Segregation of duties",def:"The same person should not both generate AI outputs and approve them for release unsupervised."},
+ {d:2,t:"Append-only logs",def:"A write mechanism preventing logs from being altered after the fact, protecting audit-trail integrity."},
+ {d:2,t:"Consistency auditing",def:"Checking whether a model contradicts itself across similar questions, even when each answer is accurate."},
+ {d:2,t:"Completeness auditing",def:"Checking whether outputs are missing required information, not just whether they're wrong."},
+ {d:2,t:"Bias subtypes",def:"Data bias (skewed training data), representation bias (underrepresented groups), algorithmic bias, outcome bias."},
+
+ {d:3,t:"MCP (Model Context Protocol)",def:"Standardized way AI assistants connect to external tools/data sources."},
+ {d:3,t:"Deepfake",def:"AI-generated synthetic media used for impersonation and disinformation."},
+ {d:3,t:"AI-accelerated recon",def:"Automating target research and crafting personalized social engineering at scale."},
+ {d:3,t:"Obfuscation (AI-assisted)",def:"AI-assisted techniques to disguise malicious code/traffic from detection."},
+ {d:3,t:"Automated attack generation",def:"AI-assisted creation of payloads, malware variants, and DDoS tooling."},
+ {d:3,t:"Document synthesis",def:"Using AI to turn raw findings/data into polished, readable reports."},
+ {d:3,t:"AI-assisted change management",def:"AI supporting approvals, automated deployment, and automated rollback."},
+ {d:3,t:"CI/CD model testing gate",def:"Automated model tests (bias/accuracy) that block a deployment if failed."},
+ {d:3,t:"SCA (Software Composition Analysis)",def:"Scanning code dependencies for known vulnerabilities, often AI-assisted in modern pipelines."},
+ {d:3,t:"Pattern recognition",def:"Correlates multiple individually-benign events into one coordinated finding — distinct from anomaly detection (single deviant event)."},
+ {d:3,t:"Misinformation vs. disinformation",def:"Misinformation is unintentional false-content spread; disinformation is deliberate, organized manipulation."},
+ {d:3,t:"WormGPT / FraudGPT",def:"Named malicious LLMs built for generating phishing emails and malware scripts."},
+ {d:3,t:"BlackMamba",def:"Malware with no malicious code in static analysis — queries an LLM at runtime to generate a fresh keylogger."},
+ {d:3,t:"AI-powered DDoS",def:"AI-driven botnets that adapt ports, packet types, and timing in real time based on live traffic feedback."},
+ {d:3,t:"Honeypot detection/evasion",def:"Attackers use ML to identify honeypots before engaging; also build fake honeypots to harvest credentials."},
+ {d:3,t:"No-code vs. low-code vs. scripting",def:"No-code: visual/NL only, zero scripting. Low-code: visual plus some scripting. Scripting: full programmatic control."},
+ {d:3,t:"Static vs. dynamic analysis",def:"Static examines code without running it; dynamic observes the application's actual live behavior."},
+ {d:3,t:"Automated rollback",def:"AI monitors post-deploy metrics and automatically reverts to the prior version if errors/latency spike."},
+
+ {d:4,t:"AI Center of Excellence",def:"Centralized team/function driving AI strategy, standards, and oversight org-wide."},
+ {d:4,t:"MLOps engineer",def:"Owns the operational deployment/monitoring pipeline for models — the ML equivalent of DevOps."},
+ {d:4,t:"AI governance engineer",def:"Implements AI governance tooling and processes."},
+ {d:4,t:"AI risk analyst",def:"Assesses and quantifies AI-related risk."},
+ {d:4,t:"AI auditor",def:"Independently reviews AI systems for compliance and quality."},
+ {d:4,t:"Shadow AI",def:"Unsanctioned AI tool use inside the business — the modern version of shadow IT."},
+ {d:4,t:"Model accuracy drift",def:"Model performance degrading over time as real-world data shifts from training data."},
+ {d:4,t:"EU AI Act",def:"Risk-tiered regulatory framework for AI systems operating within the EU."},
+ {d:4,t:"NIST AI RMF",def:"US voluntary framework for managing AI risk via govern/map/measure/manage functions."},
+ {d:4,t:"Data sovereignty",def:"Where data physically resides and which jurisdiction's law applies to it."},
+ {d:4,t:"Consistency (responsible AI)",def:"The 8th responsible-AI principle: the model behaves predictably given similar inputs, not just accurately."},
+ {d:4,t:"Hub-and-spoke governance",def:"A mature CoE model: the hub (CoE) provides shared resources/oversight while business units (spokes) execute."},
+ {d:4,t:"Embedded governance",def:"AI roles live inside product teams with light central coordination — faster, but risks duplicate/inconsistent controls."},
+ {d:4,t:"Data engineer",def:"Builds/maintains data pipelines, owns data quality and lineage — distinct from the model-building data scientist."},
+ {d:4,t:"Policy vs. standard vs. procedure vs. guideline",def:"Policy = top-level rule. Standard = measurable bar. Procedure = step-by-step how. Guideline = flexible recommendation."},
+ {d:4,t:"EU AI Act risk tiers",def:"Unacceptable (prohibited, e.g. social scoring), high risk, limited risk, minimal risk."},
+ {d:4,t:"EU AI Act is legally binding",def:"Unlike NIST AI RMF, OECD, and ISO (all voluntary/international-principle frameworks), the EU AI Act is enforceable law."}
+];
+
+/* ---------- Attack -> Control matching pairs ---------- */
+const MATCH_PAIRS = [
+ {a:"Prompt injection", c:"Prompt firewall + guardrails"},
+ {a:"Jailbreaking", c:"Guardrails + prompt templates + jailbreak testing"},
+ {a:"Data poisoning", c:"Data integrity + provenance verification"},
+ {a:"Model skewing", c:"Feedback validation + anomaly monitoring on training signals"},
+ {a:"Model theft (extraction)", c:"Rate limiting + output limiting"},
+ {a:"Indirect model theft", c:"Suppress detailed confidence scores in output"},
+ {a:"Membership inference", c:"Differential privacy + access controls"},
+ {a:"Input manipulation", c:"Adversarial training + input validation"},
+ {a:"Model denial of service", c:"Rate/token limits + cost monitoring"},
+ {a:"Insecure output handling", c:"Treat output as untrusted; validate/sanitize downstream"},
+ {a:"Excessive agency", c:"Agent access controls + least privilege + human approval"},
+ {a:"Overreliance", c:"Mandatory human review/validation on high-consequence output"},
+ {a:"AI supply-chain attack", c:"Vendor/dependency vetting + provenance checks"},
+ {a:"Model inversion", c:"Output limiting + access controls on sensitive queries"}
+];
+
+/* ---------- Final Exam Bank (updated after official study guide review: D1=12, D2=33, D3=21, D4=17 => 83 total, still weighted to Domain 2; each simulation draws 60 fresh, stratified 10/23/15/12) ---------- */
+const EXAM_BANK = [
+ // Domain 1 (8)
+ q("Which best describes reinforcement learning?","Training on labeled input/output pairs|Finding clusters in unlabeled data|Learning via reward/penalty feedback|Reducing model precision to save space".split('|'),2,"RL shapes behavior via reward/penalty signals.",1),
+ q("A GAN's generator improves primarily by:","Being fine-tuned on labeled data|Trying to fool its paired discriminator|Reducing its parameter count|Applying rate limiting".split('|'),1,"GANs pit a generator against a discriminator in competition.",1),
+ q("Which is a structured, reusable prompt pattern that also functions as a security control?","Zero-shot prompting|Prompt template|Fine-tuning|Watermarking".split('|'),1,"Prompt templates constrain free-text injection surface.",1),
+ q("A vector database in a RAG pipeline primarily stores:","Raw unencrypted PII|Embeddings for similarity search|Firewall rules|Quantized model weights".split('|'),1,"Vector stores hold embeddings that support semantic/similarity search.",1),
+ q("Which life cycle stage establishes data lineage and provenance from the start?","Deployment|Data collection|Ongoing monitoring|Business case".split('|'),1,"Lineage/provenance tracking begins as data is sourced.",1),
+ q("An organization automatically freezes flagged accounts with zero human review. This is a gap in:","Watermarking|Human oversight/validation|Data lineage|Quantization".split('|'),1,"Automated high-consequence actions without review skip human oversight.",1),
+ q("Which pair correctly differentiates LLMs from SLMs?","LLMs are narrower and cheaper; SLMs are broad and resource-heavy|LLMs are broad/general-purpose; SLMs are narrower and cheaper|Both are identical in scope and cost|SLMs cannot be fine-tuned".split('|'),1,"LLMs are broad/general-purpose and resource-heavy; SLMs are narrower, cheaper, and often edge-deployed.",1),
+ q("Reducing a model's numerical weight precision to shrink size and speed inference is:","Pruning|Quantization|Fine-tuning|Masking".split('|'),1,"Quantization lowers numeric precision; pruning removes weights entirely.",1),
+ q("A model performs excellently on training data but fails to generalize to new, unseen examples. This is:","Underfitting|Overfitting|Concept drift|Data imbalance".split('|'),1,"Overfitting means the model memorized training data rather than learning generalizable patterns.",1),
+ q("A phishing-URL classifier trained a year ago is now missing many current phishing patterns, though nothing about the model itself changed. This is:","Overfitting|Underfitting|Concept drift|Data poisoning".split('|'),2,"Concept drift is accuracy degrading over time as real-world data shifts away from training data.",1),
+ q("A team wants to reduce hundreds of network-traffic features down to a manageable number while preserving key patterns for visualization. Which technique fits?","k-means clustering|Principal component analysis (PCA)|Data minimization|Quantization".split('|'),1,"PCA reduces dimensionality while preserving key patterns — used for visualization and analysis.",1),
+ q("Email and log files, which have some structure but need custom validation, are best classified as:","Structured data|Semi-structured data|Unstructured data|Augmented data".split('|'),1,"Semi-structured data sits between structured (tables) and unstructured (free text/images).",1),
+
+ // Domain 2 (28)
+ q("A framework cataloging real-world adversary tactics/techniques against AI systems, structured like MITRE ATT&CK, is:","OWASP LLM Top 10|MITRE ATLAS|MIT AI Risk Repository|CVE AI Working Group".split('|'),1,"ATLAS is explicitly the adversarial-AI counterpart to ATT&CK.",2),
+ q("A trackable, numbered vulnerability in an open-source ML library maps to:","OWASP ML Top 10|CVE AI Working Group|OECD standards|NIST AI RMF".split('|'),1,"The CVE AI Working Group extends CVE tracking to AI-specific vulnerabilities.",2),
+ q("Which control restricts which input/output modalities (text/image/audio) a system accepts?","Rate limits|Modality limits|Token limits|Endpoint access control".split('|'),1,"Modality limits govern allowed input/output types.",2),
+ q("Which sits at the gateway layer, inspecting prompts before they reach the model?","Guardrails|Prompt firewall|Model evaluation|Data classification".split('|'),1,"A prompt firewall filters at the gateway, before the model sees input.",2),
+ q("An autonomous agent sends unauthorized external emails on its own. The control gap is:","Data access|Agent access|Network access|Model access".split('|'),1,"Agent access controls govern what an agent can independently execute.",2),
+ q("A finance RAG assistant must only retrieve documents the requester is already authorized to view. This requires:","Token limits|Data access controls mirroring source-system entitlements|Modality limits|Watermarking".split('|'),1,"Retrieval permissions must match underlying source-system access.",2),
+ q("Protecting data while actively processed in memory during inference is:","Encryption at rest|Encryption in transit|Encryption in use|Data minimization".split('|'),2,"Encryption in use covers active in-memory processing.",2),
+ q("Showing only the last four digits of an SSN to a support agent is an example of:","Anonymization|Masking|Redaction|Minimization".split('|'),1,"Masking partially obscures a value for display.",2),
+ q("Irreversibly removing identifying information from a dataset is:","Masking|Anonymization|Redaction|Classification".split('|'),1,"Anonymization irreversibly strips identifying info.",2),
+ q("A sudden unexplained spike in LLM API spend should first trigger review of:","Bias and fairness auditing|AI cost monitoring|Watermarking|Data lineage".split('|'),1,"Cost monitoring can reveal abuse or a compromised key.",2),
+ q("Confidently-stated but false model outputs are tracked under:","Rate monitoring|Hallucinations|Log sanitization|Response-confidence tracking".split('|'),1,"Hallucination auditing targets false-but-confident output.",2),
+ q("Malicious instructions smuggled into input to override intended model behavior:","Jailbreaking|Prompt injection|Model poisoning|Model inversion".split('|'),1,"That's the definition of prompt injection.",2),
+ q("Bypassing a model's built-in safety restrictions through crafted input is:","Prompt injection|Jailbreaking|Data poisoning|Excessive agency".split('|'),1,"Jailbreaking specifically targets safety/behavior restrictions.",2),
+ q("Corrupting training data so a model learns incorrect associations is:","Model poisoning|Data poisoning|Model inversion|Model theft".split('|'),1,"Data poisoning targets the training data itself.",2),
+ q("Directly tampering with a model's weights/parameters (not its training data) is:","Data poisoning|Model poisoning|Membership inference|Model DoS".split('|'),1,"Model poisoning tampers with weights/parameters directly.",2),
+ q("Reconstructing sensitive training data by probing a model's outputs is:","Model theft|Model inversion|Excessive agency|Insecure output handling".split('|'),1,"Model inversion reconstructs training data from outputs.",2),
+ q("Determining whether a specific record was part of a model's training set is:","Model theft|Membership inference|Data poisoning|Model inversion".split('|'),1,"That is the exact definition of membership inference.",2),
+ q("Compromising a model, dataset, or dependency before it reaches your organization is:","Model DoS|AI supply-chain attack|Excessive agency|Jailbreaking".split('|'),1,"Supply-chain attacks compromise upstream components.",2),
+ q("Overwhelming a model with expensive queries to exhaust compute/cost/availability is:","Model theft|Model denial of service|Insecure output handling|Prompt injection".split('|'),1,"That's model DoS, mitigated with rate/token limits and cost monitoring.",2),
+ q("An app executes an LLM's generated code output directly without review, enabling an attacker's malicious command to run. This is:","Membership inference|Insecure output handling|Model inversion|Data poisoning".split('|'),1,"Treating untrusted output as safe to execute is insecure output handling.",2),
+ q("Users intentionally give an AI recommendation system deceptive feedback over time, gradually biasing it toward their preferred outputs without triggering alarms. This is:","Data poisoning|Model skewing|Prompt injection|Model theft".split('|'),1,"Model skewing is the slow, feedback-driven bias attack, distinct from directly corrupting training data.",2),
+ q("A clinician acts on an AI triage recommendation without independently verifying it, and the recommendation turns out to be wrong. This risk is:","Excessive agency|Overreliance|Model inversion|Model skewing".split('|'),1,"Overreliance is a human failing to verify output before acting — distinct from excessive agency (what the model/agent can do).",2),
+ q("A stop sign is altered with stickers so a computer-vision model classifies it as a yield sign. This is:","Model poisoning|Input manipulation|Model inversion|Excessive agency".split('|'),1,"Input manipulation crafts adversarial inputs to cause misclassification at inference time.",2),
+ q("An attacker infers a model's proprietary decision logic purely from detailed confidence scores returned with every prediction, without directly exfiltrating anything. This is:","Model theft|Indirect model theft|Membership inference|Model inversion".split('|'),1,"Indirect model theft extracts behavior through exposed metadata like confidence scores.",2),
+ q("A privacy team prepares a public dataset ensuring individuals cannot be re-identified even if combined with other public sources. This is:","Pseudonymization|Data masking|Anonymization|Data redaction".split('|'),2,"Anonymization is irreversible; pseudonymization uses a reversible key, which would fail this requirement.",2),
+ q("A bank wants financial data to remain encrypted even while being processed in memory, so the cloud provider itself cannot access it. Which approach fits?","Encryption at rest|Data masking|Confidential computing|Encryption in transit".split('|'),2,"Confidential computing uses secure enclaves so processing happens without exposing raw data even to the cloud provider.",2),
+ q("A compliance team wants a proactive test to reveal whether guardrails fail to block verbatim leakage of proprietary training phrases. Which approach fits?","Plant unique canary strings and probe for them post-deployment|Apply k-anonymity to prompts at ingestion|Encrypt the model checkpoint at rest|Add unit tests for SDK request builders".split('|'),0,"Canary strings are planted phrases used specifically to proactively test for guardrail/leakage failures.",2),
+ q("During testing, staff repeatedly send malicious prompts specifically to see if they can bypass a model's guardrails, and monitor logs for the results. This practice is:","Rate limiting|Jailbreak testing|Model evaluation|Segregation of duties".split('|'),1,"Jailbreak testing is the deliberate, controlled practice of probing guardrails before attackers do.",2),
+ q("An AI API receives a demand surge and, instead of rejecting requests outright, slows down responses to preserve availability. This is:","Rate limiting|Throttling|Rate monitoring|Log sanitization".split('|'),1,"Throttling slows processing without outright rejection — a softer response than rate limiting.",2),
+ q("During an audit, investigators find that a single administrator both generated AI outputs and approved them for release without any oversight. Which principle was violated?","Segregation of duties|Data minimization|Rate limiting|Equal opportunity fairness".split('|'),0,"Segregation of duties requires that generation and approval not rest with the same unsupervised person.",2),
+ q("Auditors find one internal team responsible for 70% of monthly AI token consumption, driving cost spikes elsewhere. Which practice identifies this specifically?","Rate monitoring|Cost attribution|AI cost monitoring (total spend)|Accuracy auditing".split('|'),1,"Cost attribution identifies which team/user is driving spend — distinct from total cost monitoring.",2),
+ q("A model gives individually accurate answers but contradicts an earlier response to a very similar question. Which audit category catches this?","Completeness auditing|Consistency auditing|Hallucination auditing|Accuracy auditing".split('|'),1,"Consistency auditing checks for contradiction across similar questions, separate from correctness of any single answer.",2),
+ q("A loan-approval model consistently rejects applications from one demographic group despite identical financial qualifications. This most specifically reflects:","Data bias|Algorithmic bias|Representation bias|Outcome bias".split('|'),1,"When the algorithm itself produces disparate outcomes despite equal inputs and qualifications, that's algorithmic bias specifically.",2),
+
+ // Domain 3 (18)
+ q("A standardized protocol letting AI assistants connect to external tools/data sources is:","RAG|Model Context Protocol (MCP)|GAN|OWASP LLM Top 10".split('|'),1,"MCP standardizes how assistants connect to external tools/data.",3),
+ q("An analyst needs a fast way to turn a week of SIEM alerts into a readable summary. Best-fit AI use case:","Automated penetration testing|Summarization|Fraud detection|Model theft prevention".split('|'),1,"Summarization condenses large log/alert volumes into readable output.",3),
+ q("A convincing synthetic video call impersonating a CEO to authorize a wire transfer is:","Model inversion|Deepfake-enabled social engineering|Data poisoning|Model theft".split('|'),1,"Synthetic media impersonation used to manipulate a person is a deepfake attack.",3),
+ q("Attackers use AI to rapidly research and personalize phishing at scale against many targets. This is:","Automated data correlation|AI-accelerated reconnaissance and social engineering|Model DoS|Excessive agency".split('|'),1,"AI accelerates recon and personalized social engineering.",3),
+ q("AI-assisted techniques used to disguise malicious code/traffic from detection tools are called:","Obfuscation|Redaction|Masking|Watermarking".split('|'),0,"Obfuscation disguises malicious content from detection.",3),
+ q("Using AI to auto-generate a polished incident report from raw findings is:","Document synthesis|Insecure output handling|Membership inference|Model poisoning".split('|'),0,"Document synthesis turns raw data into readable reports.",3),
+ q("An AI-assisted CI/CD pipeline blocks deployment when a new model fails an automated bias test. This is:","Excessive agency|A CI/CD model testing gate|Model DoS|Shadow AI".split('|'),1,"Automated model-testing gates in CI/CD are a core automation use case.",3),
+ q("Scanning code dependencies for known vulnerabilities, often AI-assisted in modern pipelines, is:","SCA (Software Composition Analysis)|Model inversion|Data lineage tracking|Prompt engineering".split('|'),0,"SCA scans dependencies for known vulnerabilities.",3),
+ q("AI supporting approvals, automated deployment, and automated rollback describes:","AI-assisted change management|Excessive agency|Model theft|Data minimization".split('|'),0,"That is AI-assisted change management.",3),
+ q("Which is an example of AI-enabled automated attack generation?","A SOC analyst manually writing a Yara rule|AI generating novel malware variants and DDoS tooling|A firewall blocking a known IP|A human reviewing an audit log".split('|'),1,"Automated attack generation covers AI-assisted payload/malware/DDoS creation.",3),
+ q("A chatbot embedded via a CLI plug-in to help write detection rules is an example of:","An AI-enabled security tool|Shadow AI|Model inversion|Excessive agency".split('|'),0,"CLI plug-ins embedding AI assistance are part of the AI-enabled tool landscape.",3),
+ q("AI used to automatically triage and route incoming security tickets is:","Excessive agency|Incident-ticket management automation|Model DoS|Insecure output handling".split('|'),1,"Automated ticket triage/routing is a named automation use case.",3),
+ q("An AI tool notices the same external IP slowly accessing multiple servers with valid credentials over a week, extracting small amounts of data from each — no single event triggers an alert, but the combined pattern suggests a stealthy attack. This capability is:","Anomaly detection|Pattern recognition|Signature matching|Fraud detection".split('|'),1,"Pattern recognition correlates multiple individually-benign events into one coordinated finding.",3),
+ q("An AI-generated image of a disaster goes viral and causes panic, but no organized campaign is behind it — people simply believed it was real. This is:","Disinformation|Misinformation|Deepfake impersonation|Model inversion".split('|'),1,"No deliberate coordinated intent behind the spread = misinformation, not disinformation.",3),
+ q("Malware shows no malicious instructions under static analysis but queries an LLM at runtime to generate a fresh keylogger. This best represents:","Polymorphic malware|A missing digital signature|Legacy software risk|Unencrypted communication".split('|'),0,"AI-generated payloads at runtime evading static detection is a form of polymorphic malware (the BlackMamba pattern).",3),
+ q("Named real-world malicious LLM tools built for generating phishing emails and malware scripts include:","RAG and MCP|WormGPT and FraudGPT|OWASP and MITRE ATLAS|NIST AI RMF and ISO".split('|'),1,"WormGPT and FraudGPT are named malicious LLMs used for phishing/malware generation.",3),
+ q("A botnet dynamically shifts target ports, packet types, and timing based on real-time traffic feedback during an attack, evading static block lists. This is:","Automated data correlation|AI-powered DDoS|Model denial of service|Automated attack generation".split('|'),1,"AI-powered DDoS specifically adapts attack parameters in real time based on live conditions.",3),
+ q("Attackers use machine learning to analyze service responses and behavior patterns specifically to identify and avoid deception systems before engaging. This is:","Honeypot detection/evasion|Pattern recognition|Automated reconnaissance|Model inversion".split('|'),0,"This is the AI-enabled honeypot detection/evasion technique described in the attack-vectors material.",3),
+ q("Which platform tier uses only visual or natural-language interfaces with zero scripting at all?","Low-code|No-code|Full scripting|AI agent framework".split('|'),1,"No-code platforms use visual/NL interfaces exclusively; low-code allows some scripting on top.",3),
+ q("Shortly after a deployment, an AI system detects a sharp rise in error rates and response times, automatically reverts to the prior version, and alerts the team. This is:","Static code analysis|Automated rollback|Unit testing|Dynamic code analysis".split('|'),1,"Automated rollback monitors live post-deploy metrics and reverts automatically on failure.",3),
+ q("What is the key differentiator between an AI agent and a traditional automation script?","Agents always require human approval before any action|Scripts use machine learning, agents do not|An agent can plan, adapt, and act independently within its scope|Agents cannot operate in CI/CD pipelines".split('|'),2,"The defining trait of an agent is autonomous planning/adaptation within guardrails, not fixed rule-following.",3),
+
+ // Domain 4 (16)
+ q("A centralized team driving AI strategy, standards, and oversight org-wide is:","An AI Center of Excellence|An MLOps team|A prompt firewall vendor|A vector database admin group".split('|'),0,"That's the definition of an AI CoE.",4),
+ q("Who owns the operational health of a model's deployment/monitoring pipeline?","AI auditor|MLOps engineer|AI risk analyst|Data scientist".split('|'),1,"MLOps engineers own operational deployment/monitoring.",4),
+ q("Who independently reviews AI systems for compliance and quality?","AI governance engineer|AI auditor|AI architect|ML engineer".split('|'),1,"Independent compliance/quality review is the AI auditor's role.",4),
+ q("An employee pastes confidential data into an unapproved public AI chatbot. This is:","Model accuracy drift|Shadow AI|Membership inference|Data poisoning".split('|'),1,"Unsanctioned AI tool use is shadow AI.",4),
+ q("Model performance degrading over time as real-world data shifts from training data is:","Model accuracy drift|Model theft|Excessive agency|Data minimization".split('|'),0,"That's the definition of accuracy/model drift.",4),
+ q("A risk-tiered regulatory framework for AI systems operating within the EU is:","NIST AI RMF|EU AI Act|OECD standards|ISO 27001".split('|'),1,"The EU AI Act applies risk tiers to AI systems in the EU.",4),
+ q("A US voluntary framework for governing AI risk via govern/map/measure/manage functions is:","EU AI Act|NIST AI Risk Management Framework|OECD standards|MITRE ATLAS".split('|'),1,"NIST AI RMF is built around those four functions.",4),
+ q("Where data physically resides and which jurisdiction's law applies to it is called:","Data lineage|Data sovereignty|Data provenance|Data minimization".split('|'),1,"That's the definition of data sovereignty.",4),
+ q("Which responsible-AI principle is most directly violated when a model's decision process cannot be explained to affected users?","Fairness|Explainability|Accountability|Inclusiveness".split('|'),1,"Explainability concerns whether a decision process can be understood/explained.",4),
+ q("Before adopting a vendor's AI tool that will process sensitive data, an organization should first conduct:","A prompt firewall install|A third-party compliance evaluation|Model quantization|Data anonymization only".split('|'),1,"Third-party compliance evaluation is the named governance step before vendor AI adoption.",4),
+ q("Which of the following is the 8th responsible-AI principle, often left off shorter lists, meaning a model behaves predictably given similar inputs?","Fairness|Consistency|Explainability|Inclusiveness".split('|'),1,"Consistency rounds out the eight responsible-AI principles and concerns predictable behavior on similar inputs.",4),
+ q("As an AI program matures, a Center of Excellence begins providing shared resources and oversight while business units drive their own execution. This structure is:","Fully embedded governance|Hub-and-spoke governance|Centralized-only governance|Federated data governance".split('|'),1,"Hub-and-spoke is the mature evolution where the CoE (hub) supports business units (spokes) that execute independently.",4),
+ q("An organization embeds AI developers directly within each product team with minimal central coordination. The main risk of this structure is:","Excessive oversight slowing every project|Duplicate efforts and inconsistent controls across teams|Overreliance on a single Center of Excellence|Reduced speed to market".split('|'),1,"The embedded model trades central consistency for speed — its chief risk is duplicated effort and inconsistent controls.",4),
+ q("A team member builds and maintains data pipelines, ensures data quality, and manages data lineage for AI training datasets. This role is:","Data scientist|Data engineer|MLOps engineer|AI architect".split('|'),1,"Data engineer owns pipeline/quality/lineage specifically, distinct from the model-building data scientist.",4),
+ q("An internal document states: 'Data should be encrypted before being used in any AI training.' This is most likely a:","Policy|Standard|Procedure|Guideline".split('|'),1,"A specific, measurable, mandatory bar like this is a standard; the how-to steps would be the procedure.",4),
+ q("Under the EU AI Act's risk tiers, a government social scoring system would most likely be classified as:","Minimal risk|Limited risk|High risk|Unacceptable risk (prohibited)".split('|'),3,"Social scoring is a named example of the EU AI Act's unacceptable-risk tier, prohibited outright.",4),
+ q("Which of these AI-related frameworks/regulations is legally binding, unlike the others?","NIST AI RMF|OECD AI guidelines|ISO AI standards|EU AI Act".split('|'),3,"The EU AI Act is enforceable law; NIST, OECD, and ISO are voluntary/international-principle frameworks.",4)
+];
+// clean malformed entry (defensive)
+for(let i=EXAM_BANK.length-1;i>=0;i--){ if(!EXAM_BANK[i] || !Array.isArray(EXAM_BANK[i].opts) || EXAM_BANK[i].correctIdx==null){ EXAM_BANK.splice(i,1); } }
+
+/* ============================== STATE ============================== */
+const STORE_KEY = 'secai-bootcamp-progress-v1';
+let STATE = {
+  blocksDone:{},          // blockId -> true
+  objRatings:{},          // '1.1' -> 1..3
+  quizAnswers:{},         // blockId+qi -> chosenIdx
+  fcIndex:0,
+  fcDomainFilter:'all',
+  matchState:{},          // attack text -> matched bool
+  matchScore:0,
+  examState:null,         // {answers:{}, flagged:{}, startedAt, duration, submitted}
+};
+let CURRENT_VIEW = 'day1';
+let OPEN_BLOCK = null;
+
+async function loadState(){
+  try{
+    const r = await window.storage.get(STORE_KEY, false);
+    if(r && r.value){ STATE = Object.assign(STATE, JSON.parse(r.value)); }
+  }catch(e){ /* no saved state yet */ }
+}
+let saveTimer=null;
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async ()=>{
+    try{ await window.storage.set(STORE_KEY, JSON.stringify(STATE), false); }catch(e){}
+  },250);
+}
+
+/* ============================== PROGRESS CALC ============================== */
+function allBlocks(){ return DAYS.flatMap(d=>d.blocks); }
+function contentBlocks(){ return allBlocks().filter(b=>b.type!=='admin'); }
+
+function domainBlockIds(domainNum){
+  const ids=[];
+  DAYS.forEach(d=>{ if(d.domainFocus===domainNum){ d.blocks.forEach(b=>{ if(b.type!=='admin') ids.push(b.id); }); } });
+  return ids;
+}
+function domainPct(domainNum){
+  const ids=domainBlockIds(domainNum);
+  if(!ids.length) return 0;
+  const done=ids.filter(id=>STATE.blocksDone[id]).length;
+  return Math.round((done/ids.length)*100);
+}
+function overallPct(){
+  const cb=contentBlocks();
+  if(!cb.length) return 0;
+  const done=cb.filter(b=>STATE.blocksDone[b.id]).length;
+  return Math.round((done/cb.length)*100);
+}
+function dayPct(day){
+  const cb=day.blocks.filter(b=>b.type!=='admin');
+  if(!cb.length) return 100;
+  const done=cb.filter(b=>STATE.blocksDone[b.id]).length;
+  return Math.round((done/cb.length)*100);
+}
+
+/* ============================== RENDER: SIDEBAR ============================== */
+function renderSidebar(){
+  const pct = overallPct();
+  document.getElementById('gaugePct').textContent = pct+'%';
+  const status = pct===0?'NOT STARTED':pct<40?'IN PROGRESS':pct<100?'ON TRACK':'BOOTCAMP COMPLETE';
+  const statusColor = pct===0?'var(--ink-dim)':pct<40?'var(--red)':pct<100?'var(--amber)':'var(--green)';
+  const statusEl=document.getElementById('gaugeStatus');
+  statusEl.textContent=status; statusEl.style.color=statusColor;
+  const ring=document.getElementById('gaugeRing');
+  const col = pct<40? '#F0555A' : pct<75? '#F5B942' : '#3DDC84';
+  ring.style.background = 'conic-gradient('+col+' '+(pct*3.6)+'deg, #1A2740 0deg)';
+
+  const barsEl=document.getElementById('domainBars');
+  barsEl.innerHTML='';
+  [1,2,3,4].forEach(n=>{
+    const dp=domainPct(n);
+    const d=DOMAINS[n];
+    const row=document.createElement('div');
+    row.className='dbar-row';
+    row.innerHTML = '<div class="dbar-top"><span><span class="code">D'+n+'</span> '+d.short+' ('+d.weight+'%)</span><span>'+dp+'%</span></div>'+
+      '<div class="dbar-track"><div class="dbar-fill" style="width:'+dp+'%;background:'+d.color+';"></div></div>';
+    barsEl.appendChild(row);
+  });
+
+  const nav=document.getElementById('navlist');
+  nav.innerHTML='';
+  const label1=document.createElement('div'); label1.className='navlabel'; label1.textContent='Bootcamp Days'; nav.appendChild(label1);
+  DAYS.forEach(d=>{
+    const dp=dayPct(d);
+    const item=document.createElement('div');
+    item.className='navitem'+(CURRENT_VIEW===d.key?' active':'');
+    const dotClass = dp===0?'':dp<100?'partial':'done';
+    item.innerHTML = '<span class="idx">D'+d.id+'</span><span class="dot '+dotClass+'"></span><span>'+d.title.split(' — ')[0]+'</span><span class="pct">'+dp+'%</span>';
+    item.onclick=()=>{ CURRENT_VIEW=d.key; OPEN_BLOCK=null; render(); };
+    nav.appendChild(item);
+  });
+  const label2=document.createElement('div'); label2.className='navlabel'; label2.textContent='Study Tools'; nav.appendChild(label2);
+  const tools=[
+    {key:'tracker', name:'Objective Tracker'},
+    {key:'flashcards', name:'Flashcards'},
+    {key:'match', name:'Attack ↔ Control Drill'},
+    {key:'exam', name:'Final Exam Simulation'}
+  ];
+  tools.forEach(t=>{
+    const item=document.createElement('div');
+    item.className='navitem'+(CURRENT_VIEW===t.key?' active':'');
+    item.innerHTML = '<span class="idx">›</span><span>'+t.name+'</span>';
+    item.onclick=()=>{ CURRENT_VIEW=t.key; render(); };
+    nav.appendChild(item);
+  });
+}
+
+/* ============================== RENDER: QUIZ WIDGET ============================== */
+function renderQuiz(qObj, uid){
+  const saved = STATE.quizAnswers[uid];
+  const wrap=document.createElement('div');
+  wrap.className='qcard';
+  const qt=document.createElement('div'); qt.className='qtext'; qt.textContent=qObj.text; wrap.appendChild(qt);
+  qObj.opts.forEach((optText,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=optText;
+    if(saved!=null){
+      b.disabled=true;
+      if(i===qObj.correctIdx) b.classList.add('correct');
+      else if(i===saved) b.classList.add('wrong');
+    }
+    b.onclick=()=>{
+      if(STATE.quizAnswers[uid]!=null) return;
+      STATE.quizAnswers[uid]=i; saveState();
+      renderQuizButtons(wrap, qObj, uid);
+    };
+    wrap.appendChild(b);
+  });
+  const ex=document.createElement('div'); ex.className='explain'+(saved!=null?' show':'');
+  ex.textContent=qObj.explain||'';
+  wrap.appendChild(ex);
+  return wrap;
+}
+function renderQuizButtons(wrap, qObj, uid){
+  const opts=wrap.querySelectorAll('.opt');
+  const saved=STATE.quizAnswers[uid];
+  opts.forEach((b,i)=>{
+    b.disabled=true;
+    if(i===qObj.correctIdx) b.classList.add('correct');
+    else if(i===saved) b.classList.add('wrong');
+  });
+  wrap.querySelector('.explain').classList.add('show');
+}
+
+/* ============================== RENDER: DAY VIEW ============================== */
+function renderDay(dayKey){
+  const day = DAYS.find(d=>d.key===dayKey);
+  const main=document.getElementById('main');
+  main.innerHTML='';
+  const top=document.createElement('div'); top.className='topline';
+  top.innerHTML = '<div><h1>'+day.title+'</h1><div class="sub">'+day.label+' · '+day.dateNote+'</div></div>'+
+    '<div class="pill">DOMAIN FOCUS: D'+day.domainFocus+' · '+DOMAINS[day.domainFocus].short+'</div>';
+  main.appendChild(top);
+
+  day.blocks.forEach(b=>{
+    const blk=document.createElement('div');
+    blk.className='block'+(OPEN_BLOCK===b.id?' open':'');
+    const head=document.createElement('div'); head.className='block-head';
+    const chk=document.createElement('div');
+    chk.className='chk'+(STATE.blocksDone[b.id]?' on':'');
+    if(b.type==='admin'){ chk.style.visibility='hidden'; }
+    chk.onclick=(e)=>{ e.stopPropagation(); if(b.type==='admin')return; STATE.blocksDone[b.id]=!STATE.blocksDone[b.id]; saveState(); render(); };
+    head.appendChild(chk);
+    const time=document.createElement('div'); time.className='time mono'; time.textContent=b.time; head.appendChild(time);
+    const bt=document.createElement('div'); bt.className='btitle';
+    const objTag = b.obj? '<span class="tag obj">'+b.obj+'</span>' : '';
+    const typeTag = '<span class="tag '+b.type+'">'+b.type.toUpperCase()+'</span>';
+    bt.innerHTML = '<div class="name">'+b.title+'</div><div class="tags">'+typeTag+objTag+'</div>';
+    head.appendChild(bt);
+    const caret=document.createElement('div'); caret.className='caret'; caret.textContent='▸'; head.appendChild(caret);
+    head.onclick=()=>{ OPEN_BLOCK = (OPEN_BLOCK===b.id? null : b.id); render(); };
+    blk.appendChild(head);
+
+    const body=document.createElement('div'); body.className='block-body';
+    const inner=document.createElement('div'); inner.className='block-inner';
+    inner.innerHTML = b.body;
+    if(b.terms && b.terms.length){
+      const h4=document.createElement('h4'); h4.textContent='Key Terms'; inner.appendChild(h4);
+      const chips=document.createElement('div'); chips.className='term-chips';
+      b.terms.forEach(t=>{ const c=document.createElement('span'); c.className='term-chip'; c.textContent=t; chips.appendChild(c); });
+      inner.appendChild(chips);
+    }
+    if(b.quiz && b.quiz.length){
+      const h4=document.createElement('h4'); h4.textContent='Knowledge Check'; inner.appendChild(h4);
+      b.quiz.forEach((qq,i)=>{ inner.appendChild(renderQuiz(qq, b.id+'-q'+i)); });
+    }
+    body.appendChild(inner);
+    blk.appendChild(body);
+    main.appendChild(blk);
+  });
+}
+
+/* ============================== RENDER: OBJECTIVE TRACKER ============================== */
+const OBJECTIVES = [
+ {code:'1.1',d:1,name:'AI types and techniques'},
+ {code:'1.2',d:1,name:'Data security in AI'},
+ {code:'1.3',d:1,name:'Security throughout the AI life cycle'},
+ {code:'2.1',d:2,name:'AI threat-modeling resources'},
+ {code:'2.2',d:2,name:'Security controls for AI systems'},
+ {code:'2.3',d:2,name:'Access controls for AI systems'},
+ {code:'2.4',d:2,name:'Data security controls for AI systems'},
+ {code:'2.5',d:2,name:'Monitoring and auditing for AI systems'},
+ {code:'2.6',d:2,name:'Attack analysis and compensating controls'},
+ {code:'3.1',d:3,name:'AI-enabled tools for security tasks'},
+ {code:'3.2',d:3,name:'How AI enables/enhances attack vectors'},
+ {code:'3.3',d:3,name:'Using AI to automate security tasks'},
+ {code:'4.1',d:4,name:'Governance structures that support AI'},
+ {code:'4.2',d:4,name:'Risks associated with AI'},
+ {code:'4.3',d:4,name:'Impact of compliance on AI use/development'}
+];
+function renderTracker(){
+  const main=document.getElementById('main'); main.innerHTML='';
+  const top=document.createElement('div'); top.className='topline';
+  top.innerHTML='<div><h1>Objective Tracker</h1><div class="sub">Rate yourself 1–3 on every sub-objective. Anything at 1 is your remediation list.</div></div>';
+  main.appendChild(top);
+  [1,2,3,4].forEach(dn=>{
+    const sec=document.createElement('div'); sec.className='block open'; sec.style.marginBottom='14px';
+    const head=document.createElement('div'); head.className='block-head'; head.style.cursor='default';
+    head.innerHTML='<div class="btitle"><div class="name" style="color:'+DOMAINS[dn].color+'">Domain '+dn+' — '+DOMAINS[dn].name+' ('+DOMAINS[dn].weight+'%)</div></div>';
+    sec.appendChild(head);
+    const body=document.createElement('div'); body.className='block-body'; body.style.maxHeight='none';
+    const inner=document.createElement('div'); inner.className='block-inner'; inner.style.paddingLeft='18px';
+    OBJECTIVES.filter(o=>o.d===dn).forEach(o=>{
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);';
+      const label=document.createElement('div');
+      label.style.cssText='flex:1;font-size:13.5px;';
+      label.innerHTML='<span class="mono" style="color:var(--cyan);margin-right:8px;">'+o.code+'</span>'+o.name;
+      row.appendChild(label);
+      const btns=document.createElement('div'); btns.style.cssText='display:flex;gap:6px;';
+      [1,2,3].forEach(v=>{
+        const b=document.createElement('button');
+        const active = STATE.objRatings[o.code]===v;
+        b.className='btn'+(active?' primary':''); b.style.padding='5px 11px'; b.textContent=v;
+        b.onclick=()=>{ STATE.objRatings[o.code]=v; saveState(); render(); };
+        btns.appendChild(b);
+      });
+      row.appendChild(btns);
+      inner.appendChild(row);
+    });
+    body.appendChild(inner); sec.appendChild(body); main.appendChild(sec);
+  });
+  const gaps = OBJECTIVES.filter(o=>STATE.objRatings[o.code]===1);
+  const gapCard=document.createElement('div'); gapCard.className='block open';
+  const gh=document.createElement('div'); gh.className='block-head'; gh.style.cursor='default';
+  gh.innerHTML='<div class="btitle"><div class="name">Remediation List</div></div>';
+  gapCard.appendChild(gh);
+  const gb=document.createElement('div'); gb.className='block-body'; gb.style.maxHeight='none';
+  const gi=document.createElement('div'); gi.className='block-inner'; gi.style.paddingLeft='18px';
+  gi.innerHTML = gaps.length? ('<ul>'+gaps.map(o=>'<li class="mono">'+o.code+'</li> '+o.name).join('')+'</ul>') : '<p class="empty">No objectives rated 1 yet — nothing flagged. Rate honestly as you go.</p>';
+  gb.appendChild(gi); gapCard.appendChild(gb); main.appendChild(gapCard);
+}
+
+/* ============================== RENDER: FLASHCARDS ============================== */
+function currentDeck(){
+  if(STATE.fcDomainFilter==='all') return FLASHCARDS;
+  return FLASHCARDS.filter(c=>c.d===Number(STATE.fcDomainFilter));
+}
+function renderFlashcards(){
+  const main=document.getElementById('main'); main.innerHTML='';
+  const top=document.createElement('div'); top.className='topline';
+  top.innerHTML='<div><h1>Flashcards</h1><div class="sub">Click a card to flip. '+FLASHCARDS.length+' terms across all four domains.</div></div>';
+  main.appendChild(top);
+
+  const wrap=document.createElement('div'); wrap.className='fc-wrap';
+  const filterBar=document.createElement('div'); filterBar.className='fc-filterbar';
+  [['all','All'], [1,'D1'], [2,'D2'], [3,'D3'], [4,'D4']].forEach(([val,lab])=>{
+    const b=document.createElement('button');
+    b.className='btn'+(String(STATE.fcDomainFilter)===String(val)?' primary':'');
+    b.textContent=lab;
+    b.onclick=()=>{ STATE.fcDomainFilter=val; STATE.fcIndex=0; saveState(); render(); };
+    filterBar.appendChild(b);
+  });
+  wrap.appendChild(filterBar);
+
+  const deck=currentDeck();
+  if(STATE.fcIndex>=deck.length) STATE.fcIndex=0;
+  const card=deck[STATE.fcIndex];
+
+  const scene=document.createElement('div'); scene.className='fc-scene';
+  const inner=document.createElement('div'); inner.className='fc-card'; inner.id='fcCard';
+  let flipped=false;
+  const front=document.createElement('div'); front.className='fc-face';
+  front.innerHTML='<span class="k mono">D'+card.d+' · TERM</span><div class="term">'+card.t+'</div>';
+  const back=document.createElement('div'); back.className='fc-face fc-back';
+  back.innerHTML='<span class="k mono">D'+card.d+' · DEFINITION</span><div class="def">'+card.def+'</div>';
+  inner.appendChild(front); inner.appendChild(back);
+  scene.appendChild(inner);
+  scene.onclick=()=>{ flipped=!flipped; inner.classList.toggle('flipped'); };
+  wrap.appendChild(scene);
+
+  const prog=document.createElement('div'); prog.className='fc-progress'; prog.textContent=(STATE.fcIndex+1)+' / '+deck.length; wrap.appendChild(prog);
+
+  const controls=document.createElement('div'); controls.className='fc-controls';
+  const prevB=document.createElement('button'); prevB.className='btn'; prevB.textContent='← Prev';
+  prevB.onclick=()=>{ STATE.fcIndex=(STATE.fcIndex-1+deck.length)%deck.length; saveState(); render(); };
+  const shufB=document.createElement('button'); shufB.className='btn'; shufB.textContent='Shuffle';
+  shufB.onclick=()=>{ STATE.fcIndex=Math.floor(Math.random()*deck.length); saveState(); render(); };
+  const nextB=document.createElement('button'); nextB.className='btn primary'; nextB.textContent='Next →';
+  nextB.onclick=()=>{ STATE.fcIndex=(STATE.fcIndex+1)%deck.length; saveState(); render(); };
+  controls.appendChild(prevB); controls.appendChild(shufB); controls.appendChild(nextB);
+  wrap.appendChild(controls);
+
+  main.appendChild(wrap);
+}
+
+/* ============================== RENDER: MATCH DRILL ============================== */
+let matchSelection = {a:null, c:null};
+function renderMatch(){
+  const main=document.getElementById('main'); main.innerHTML='';
+  const top=document.createElement('div'); top.className='topline';
+  top.innerHTML='<div><h1>Attack ↔ Control Drill</h1><div class="sub">Objective 2.6 — the single highest-value objective on the exam. Click an attack, then its matching compensating control.</div></div>'+
+    '<div class="pill">SCORE: '+Object.keys(STATE.matchState).filter(k=>STATE.matchState[k]).length+' / '+MATCH_PAIRS.length+'</div>';
+  main.appendChild(top);
+
+  const resetBtn=document.createElement('button'); resetBtn.className='btn'; resetBtn.style.marginBottom='14px'; resetBtn.textContent='Reset Drill';
+  resetBtn.onclick=()=>{ STATE.matchState={}; matchSelection={a:null,c:null}; saveState(); render(); };
+  main.appendChild(resetBtn);
+
+  const grid=document.createElement('div'); grid.className='match-grid';
+  const colA=document.createElement('div'); colA.className='match-col';
+  colA.innerHTML='<h4>Attack</h4>';
+  const shuffledA=[...MATCH_PAIRS];
+  shuffledA.forEach(p=>{
+    const done = STATE.matchState[p.a];
+    const el=document.createElement('div');
+    el.className='match-item'+(done?' correct locked':'')+(matchSelection.a===p.a?' sel':'');
+    el.textContent=p.a;
+    if(!done){
+      el.onclick=()=>{ matchSelection.a=p.a; tryMatch(); render(); };
+    }
+    colA.appendChild(el);
+  });
+
+  const colC=document.createElement('div'); colC.className='match-col';
+  colC.innerHTML='<h4>Compensating Control</h4>';
+  const shuffledC=[...MATCH_PAIRS].sort(()=>Math.random()-0.5);
+  shuffledC.forEach(p=>{
+    const done = STATE.matchState[p.a];
+    const el=document.createElement('div');
+    el.className='match-item'+(done?' correct locked':'')+(matchSelection.c===p.c?' sel':'');
+    el.textContent=p.c;
+    if(!done){
+      el.onclick=()=>{ matchSelection.c=p.c; tryMatch(); render(); };
+    }
+    colC.appendChild(el);
+  });
+
+  grid.appendChild(colA); grid.appendChild(colC);
+  main.appendChild(grid);
+
+  function tryMatch(){
+    if(matchSelection.a && matchSelection.c){
+      const pair = MATCH_PAIRS.find(p=>p.a===matchSelection.a);
+      if(pair && pair.c===matchSelection.c){
+        STATE.matchState[pair.a]=true; saveState();
+      }
+      matchSelection={a:null,c:null};
+    }
+  }
+}
+
+/* ============================== RENDER: FINAL EXAM ============================== */
+let examTimerHandle=null;
+function sampleExamQuestions(){
+  const quotas = {1:10, 2:23, 3:15, 4:12}; // sums to 60, proportional to the 83-question bank composition
+  const byDomain = {1:[],2:[],3:[],4:[]};
+  EXAM_BANK.forEach(qq=>{ if(byDomain[qq.domain]) byDomain[qq.domain].push(qq); });
+  let picked=[];
+  [1,2,3,4].forEach(dn=>{
+    const pool=[...byDomain[dn]].sort(()=>Math.random()-0.5);
+    picked = picked.concat(pool.slice(0, Math.min(quotas[dn], pool.length)));
+  });
+  return picked.sort(()=>Math.random()-0.5);
+}
+function startExam(){
+  STATE.examState = { questions: sampleExamQuestions(), answers:{}, flagged:{}, current:0, startedAt:Date.now(), duration:60*60, submitted:false };
+  saveState(); render();
+}
+function renderExam(){
+  const main=document.getElementById('main'); main.innerHTML='';
+  const top=document.createElement('div'); top.className='topline';
+  top.innerHTML='<div><h1>Final Exam Simulation</h1><div class="sub">60 questions, freshly drawn from an 83-question bank each attempt · weighted to blueprint · 60-minute timer</div></div>';
+  main.appendChild(top);
+
+  const es=STATE.examState;
+  if(!es || es.submitted){
+    if(es && es.submitted){ renderExamResults(main, es); return; }
+    const startCard=document.createElement('div'); startCard.className='block open';
+    const bd=document.createElement('div'); bd.className='block-body'; bd.style.maxHeight='none';
+    const bi=document.createElement('div'); bi.className='block-inner'; bi.style.padding='20px';
+    bi.innerHTML='<p>This simulates exam-day conditions: 60 questions randomly drawn from an 83-question bank, one 60-minute timer, no going back to study material. Question mix mirrors the real blueprint (Domain 2 heaviest, Domain 1 lightest). Retake it and you\'ll get a different draw.</p>';
+    const b=document.createElement('button'); b.className='btn primary'; b.textContent='Start 60-Minute Simulation';
+    b.onclick=startExam;
+    bi.appendChild(b);
+    bd.appendChild(bi); startCard.appendChild(bd); main.appendChild(startCard);
+    return;
+  }
+
+  const elapsed = Math.floor((Date.now()-es.startedAt)/1000);
+  const remaining = Math.max(0, es.duration - elapsed);
+  if(remaining<=0 && !es.submitted){ submitExam(); return; }
+
+  const exTop=document.createElement('div'); exTop.className='exam-top';
+  const mins=String(Math.floor(remaining/60)).padStart(2,'0');
+  const secs=String(remaining%60).padStart(2,'0');
+  const timer=document.createElement('div'); timer.className='timer'+(remaining<300?' low':''); timer.textContent=mins+':'+secs;
+  exTop.appendChild(timer);
+  const submitB=document.createElement('button'); submitB.className='btn primary'; submitB.textContent='Submit Exam';
+  submitB.onclick=submitExam;
+  exTop.appendChild(submitB);
+  main.appendChild(exTop);
+
+  const strip=document.createElement('div'); strip.className='progress-strip'; strip.style.margin='12px 0';
+  es.questions.forEach((qq,i)=>{
+    const dot=document.createElement('div');
+    let cls='pdot';
+    if(es.answers[i]!=null) cls+=' answered';
+    if(es.flagged[i]) cls+=' flagged';
+    if(es.current===i) cls+=' current';
+    dot.className=cls;
+    dot.onclick=()=>{ es.current=i; saveState(); render(); };
+    strip.appendChild(dot);
+  });
+  main.appendChild(strip);
+
+  const i = es.current;
+  const qq = es.questions[i];
+  const qCard=document.createElement('div'); qCard.className='block open';
+  const qBody=document.createElement('div'); qBody.className='block-body'; qBody.style.maxHeight='none';
+  const qInner=document.createElement('div'); qInner.className='block-inner'; qInner.style.padding='20px';
+  qInner.innerHTML='<div class="pill" style="margin-bottom:10px;">Question '+(i+1)+' / '+es.questions.length+' · Domain '+qq.domain+'</div>';
+  const qt=document.createElement('div'); qt.style.cssText='font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);'; qt.textContent=qq.text;
+  qInner.appendChild(qt);
+  qq.opts.forEach((optText,oi)=>{
+    const b=document.createElement('button'); b.className='opt';
+    if(es.answers[i]===oi) b.classList.add('sel');
+    b.style.borderColor = es.answers[i]===oi? 'var(--cyan)':'';
+    b.textContent=optText;
+    b.onclick=()=>{ es.answers[i]=oi; saveState(); render(); };
+    qInner.appendChild(b);
+  });
+  const navRow=document.createElement('div'); navRow.style.cssText='display:flex;gap:10px;margin-top:16px;align-items:center;';
+  const prevB=document.createElement('button'); prevB.className='btn'; prevB.textContent='← Prev'; prevB.disabled=i===0;
+  prevB.onclick=()=>{ es.current=Math.max(0,i-1); saveState(); render(); };
+  const flagB=document.createElement('button'); flagB.className='btn'; flagB.textContent=es.flagged[i]?'Unflag':'Flag for review';
+  flagB.onclick=()=>{ es.flagged[i]=!es.flagged[i]; saveState(); render(); };
+  const nextB=document.createElement('button'); nextB.className='btn primary'; nextB.textContent='Next →'; nextB.disabled=i===es.questions.length-1;
+  nextB.onclick=()=>{ es.current=Math.min(es.questions.length-1,i+1); saveState(); render(); };
+  navRow.appendChild(prevB); navRow.appendChild(flagB); navRow.appendChild(nextB);
+  qInner.appendChild(navRow);
+  qBody.appendChild(qInner); qCard.appendChild(qBody); main.appendChild(qCard);
+
+  clearInterval(examTimerHandle);
+  examTimerHandle=setInterval(()=>{
+    if(CURRENT_VIEW!=='exam' || !STATE.examState || STATE.examState.submitted){ clearInterval(examTimerHandle); return; }
+    const el=document.querySelector('.timer');
+    if(!el){ clearInterval(examTimerHandle); return; }
+    const rem = Math.max(0, STATE.examState.duration - Math.floor((Date.now()-STATE.examState.startedAt)/1000));
+    const m=String(Math.floor(rem/60)).padStart(2,'0'); const s=String(rem%60).padStart(2,'0');
+    el.textContent=m+':'+s;
+    if(rem<300) el.classList.add('low');
+    if(rem<=0){ submitExam(); }
+  },1000);
+}
+function submitExam(){
+  if(!STATE.examState || STATE.examState.submitted) return;
+  STATE.examState.submitted=true;
+  saveState(); render();
+}
+function renderExamResults(main, es){
+  let correct=0; const byDomain={1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0}};
+  const missed=[];
+  es.questions.forEach((qq,i)=>{
+    byDomain[qq.domain].t++;
+    if(es.answers[i]===qq.correctIdx){ correct++; byDomain[qq.domain].c++; }
+    else missed.push({i,qq});
+  });
+  const pct = Math.round((correct/es.questions.length)*100);
+  const scaled = Math.round(100 + (pct/100)*800); // rough mapping onto 100-900 scale
+  const pass = scaled>=600;
+
+  const rc=document.createElement('div'); rc.className='block open';
+  const rb=document.createElement('div'); rb.className='block-body'; rb.style.maxHeight='none';
+  const ri=document.createElement('div'); ri.className='block-inner'; ri.style.padding='20px';
+  ri.innerHTML = '<h4 style="margin-top:0;">Result</h4>';
+  const grid=document.createElement('div'); grid.className='results-grid';
+  grid.innerHTML =
+    '<div class="rcard"><div class="big" style="color:'+(pass?'var(--green)':'var(--red)')+';">'+scaled+'</div><div class="lbl">Estimated scaled score (pass ≥ 600)</div></div>'+
+    '<div class="rcard"><div class="big">'+pct+'%</div><div class="lbl">'+correct+' / '+es.questions.length+' correct</div></div>';
+  ri.appendChild(grid);
+
+  const dbars=document.createElement('div');
+  [1,2,3,4].forEach(dn=>{
+    const st=byDomain[dn]; const p= st.t? Math.round((st.c/st.t)*100):0;
+    const row=document.createElement('div'); row.className='dbar-row'; row.style.marginBottom='8px';
+    row.innerHTML='<div class="dbar-top"><span><span class="code">D'+dn+'</span> '+DOMAINS[dn].short+'</span><span>'+st.c+'/'+st.t+' ('+p+'%)</span></div><div class="dbar-track"><div class="dbar-fill" style="width:'+p+'%;background:'+DOMAINS[dn].color+';"></div></div>';
+    dbars.appendChild(row);
+  });
+  ri.appendChild(dbars);
+
+  const verdict=document.createElement('p');
+  verdict.style.marginTop='16px';
+  verdict.innerHTML = pass?
+    '<b style="color:var(--green);">Above the passing bar.</b> Review your missed questions below, then check the Day 5 Go/No-Go criteria before booking.':
+    '<b style="color:var(--red);">Below the passing bar.</b> Focus remediation on your weakest domain above before re-attempting.';
+  ri.appendChild(verdict);
+
+  const retryB=document.createElement('button'); retryB.className='btn primary'; retryB.style.marginTop='10px'; retryB.textContent='Retake Simulation';
+  retryB.onclick=()=>{ STATE.examState=null; saveState(); render(); };
+  ri.appendChild(retryB);
+
+  rb.appendChild(ri); rc.appendChild(rb); main.appendChild(rc);
+
+  const mc=document.createElement('div'); mc.className='block open';
+  const mb=document.createElement('div'); mb.className='block-body'; mb.style.maxHeight='none';
+  const mi=document.createElement('div'); mi.className='block-inner'; mi.style.padding='20px';
+  mi.innerHTML='<h4 style="margin-top:0;">Missed Questions ('+missed.length+')</h4>';
+  if(!missed.length){ mi.innerHTML+='<p class="empty">Clean sweep. Nothing missed.</p>'; }
+  missed.forEach(m=>{
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML='<div class="qtext">D'+m.qq.domain+' · '+m.qq.text+'</div>'+
+      '<div style="font-size:12.5px;color:var(--ink-dim);margin-bottom:4px;">Your answer: '+(es.answers[m.i]!=null? m.qq.opts[es.answers[m.i]] : '(unanswered)')+'</div>'+
+      '<div style="font-size:12.5px;color:var(--green);margin-bottom:6px;">Correct: '+m.qq.opts[m.qq.correctIdx]+'</div>'+
+      '<div class="explain show">'+m.qq.explain+'</div>';
+    mi.appendChild(card);
+  });
+  mb.appendChild(mi); mc.appendChild(mb); main.appendChild(mc);
+}
+
+/* ============================== MASTER RENDER ============================== */
+function render(){
+  renderSidebar();
+  if(CURRENT_VIEW==='tracker') renderTracker();
+  else if(CURRENT_VIEW==='flashcards') renderFlashcards();
+  else if(CURRENT_VIEW==='match') renderMatch();
+  else if(CURRENT_VIEW==='exam') renderExam();
+  else renderDay(CURRENT_VIEW);
+}
+
+(async function init(){
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecAI+ CY0-001 — Video Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F1C; --panel:#0F1729; --panel-2:#141F38; --line:#22304F;
+  --ink:#E8ECF4; --ink-dim:#8B96AC; --cyan:#5AC8FA; --green:#3DDC84; --amber:#F5B942; --red:#F0555A;
+  --mono:'JetBrains Mono',monospace; --disp:'Space Grotesk',sans-serif; --body:'Inter',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+.mono{font-family:var(--mono);} .disp{font-family:var(--disp);}
+
+#app{display:flex;min-height:100vh;}
+
+/* Sidebar / playlist */
+#pl{width:300px;flex:none;background:linear-gradient(180deg,var(--panel),#0B1220);border-right:1px solid var(--line);
+  height:100vh;position:sticky;top:0;overflow-y:auto;padding:18px 14px;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:conic-gradient(from 220deg,var(--cyan),var(--green) 40%,var(--amber) 70%,var(--red) 100%);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:10px;color:#0A0F1C;flex:none;}
+.brand-text .t1{font-family:var(--disp);font-weight:700;font-size:13px;}
+.brand-text .t2{font-family:var(--mono);font-size:10px;color:var(--ink-dim);}
+
+.support-note{font-size:11px;color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:14px;line-height:1.4;}
+.support-note.warn{border-color:var(--amber);color:var(--amber);}
+
+.pl-progress{margin-bottom:14px;}
+.pl-progress-top{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-dim);margin-bottom:5px;}
+.pl-track{height:6px;border-radius:4px;background:#1A2740;overflow:hidden;}
+.pl-fill{height:100%;background:var(--green);border-radius:4px;}
+
+.dayhead{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:14px 4px 6px;}
+.ep{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent;}
+.ep:hover{background:#131E36;}
+.ep.active{background:#132038;border-color:var(--line);}
+.ep .num{font-family:var(--mono);font-size:11px;color:var(--ink-dim);width:20px;flex:none;padding-top:1px;}
+.ep .meta{flex:1;min-width:0;}
+.ep .ttl{font-size:12.5px;line-height:1.3;}
+.ep .sub{font-size:10.5px;color:var(--ink-dim);margin-top:2px;font-family:var(--mono);}
+.ep .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none;margin-top:4px;}
+.ep .dot.done{background:var(--green);}
+.ep .dot.playing{background:var(--cyan);}
+
+/* Main player */
+#player{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;padding:26px 20px 40px;}
+.screen-wrap{width:100%;max-width:820px;}
+.screen{
+  width:100%;aspect-ratio:16/9;border-radius:16px;border:1px solid var(--line);
+  background:radial-gradient(circle at 20% 15%,rgba(90,200,250,.10),transparent 45%),
+             radial-gradient(circle at 85% 90%,rgba(61,220,132,.08),transparent 45%),
+             linear-gradient(160deg,#101B33,#0A1220);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;padding:26px 30px;
+}
+.screen .epcode{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.06em;}
+.screen h2{font-family:var(--disp);font-size:clamp(18px,3vw,26px);margin:6px 0 18px;}
+.slide-bullets{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;}
+.bullet{
+  font-size:clamp(13px,1.9vw,16.5px);line-height:1.5;color:#8792A8;padding:9px 14px;border-radius:9px;
+  border-left:3px solid transparent;transition:all .25s ease;
+}
+.bullet.active{color:var(--ink);background:rgba(90,200,250,.08);border-left-color:var(--cyan);transform:translateX(2px);}
+.bullet.past{color:#5C6884;}
+
+.viz{position:absolute;bottom:14px;right:20px;display:flex;gap:3px;align-items:flex-end;height:20px;opacity:.6;}
+.viz span{width:3px;background:var(--green);border-radius:2px;animation:bar 1s ease-in-out infinite;}
+.viz span:nth-child(2){animation-delay:.15s;} .viz span:nth-child(3){animation-delay:.3s;}
+.viz span:nth-child(4){animation-delay:.45s;} .viz span:nth-child(5){animation-delay:.6s;}
+@keyframes bar{0%,100%{height:5px;}50%{height:18px;}}
+.viz.paused span{animation-play-state:paused;height:5px;}
+
+.caption-bar{
+  margin-top:14px;min-height:44px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:10px 16px;font-size:13.5px;line-height:1.5;color:var(--ink);
+}
+.caption-bar .lbl{font-family:var(--mono);font-size:9.5px;color:var(--ink-dim);letter-spacing:.08em;display:block;margin-bottom:3px;}
+
+/* Controls */
+.controls{width:100%;max-width:820px;margin-top:16px;}
+.scrub{height:5px;border-radius:4px;background:#1A2740;cursor:pointer;overflow:hidden;margin-bottom:12px;}
+.scrub-fill{height:100%;background:var(--cyan);width:0%;}
+.ctrl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ctrl-btn{
+  width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.ctrl-btn.play{width:50px;height:50px;background:var(--cyan);color:#04121F;border:none;font-size:18px;}
+.ctrl-btn:hover{border-color:var(--cyan);}
+.ctrl-btn:disabled{opacity:.35;cursor:not-allowed;}
+.spacer{flex:1;}
+select, .rate-btn{
+  font-family:var(--mono);font-size:12px;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;padding:8px 10px;cursor:pointer;
+}
+.toggle{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-dim);}
+.toggle input{accent-color:var(--cyan);}
+.timecode{font-family:var(--mono);font-size:11px;color:var(--ink-dim);}
+
+.ep-nav{display:flex;justify-content:space-between;margin-top:22px;gap:10px;}
+.ep-nav .btn{
+  flex:1;font-family:var(--mono);font-size:12px;padding:10px 14px;border-radius:9px;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--ink);cursor:pointer;text-align:center;
+}
+.ep-nav .btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.ep-nav .btn:disabled{opacity:.35;cursor:not-allowed;}
+
+@media(max-width:880px){
+  #app{flex-direction:column;}
+  #pl{width:100%;height:auto;position:relative;max-height:280px;}
+  #player{padding:16px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="pl">
+    <div class="brand">
+      <div class="brand-mark">CY0</div>
+      <div class="brand-text"><div class="t1">SECAI+ VIDEO COURSE</div><div class="t2">CY0-001 · WATCH &amp; LISTEN</div></div>
+    </div>
+    <div id="supportNote"></div>
+    <div class="pl-progress">
+      <div class="pl-progress-top"><span>Course progress</span><span id="plPct">0%</span></div>
+      <div class="pl-track"><div class="pl-fill" id="plFill" style="width:0%"></div></div>
+    </div>
+    <div id="playlist"></div>
+  </aside>
+
+  <main id="player">
+    <div class="screen-wrap">
+      <div class="screen" id="screen">
+        <div class="epcode mono" id="epCode">—</div>
+        <h2 id="epTitle">Loading…</h2>
+        <div class="slide-bullets" id="bullets"></div>
+        <div class="viz" id="viz"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="caption-bar"><span class="lbl">CAPTION</span><span id="captionText">Press play to begin.</span></div>
+
+      <div class="controls">
+        <div class="scrub" id="scrub"><div class="scrub-fill" id="scrubFill"></div></div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn" id="btnPrevSlide" title="Previous slide">⟲</button>
+          <button class="ctrl-btn play" id="btnPlay" title="Play/Pause">▶</button>
+          <button class="ctrl-btn" id="btnNextSlide" title="Next slide">⟳</button>
+          <span class="timecode" id="timecode">Slide 0/0</span>
+          <div class="spacer"></div>
+          <select id="rateSel" title="Playback speed">
+            <option value="0.8">0.8×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+            <option value="1.5">1.5×</option>
+            <option value="1.75">1.75×</option>
+          </select>
+          <select id="voiceSel" title="Narrator voice"></select>
+          <label class="toggle"><input type="checkbox" id="autoplayChk" checked> Autoplay next</label>
+        </div>
+      </div>
+
+      <div class="ep-nav">
+        <button class="btn" id="btnPrevEp">← Previous episode</button>
+        <button class="btn" id="btnNextEp">Next episode →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ============================== EPISODE DATA ============================== */
+/* Each slide: heading + chunks. Each chunk has cap (on-screen bullet) and say (spoken text). */
+function ep(id, day, domain, code, title, slides){ return {id, day, domain, code, title, slides}; }
+function sl(heading, chunks){ return {heading, chunks}; }
+function ch(cap, say){ return {cap, say: say||cap}; }
+
+const EPISODES = [
+
+ep('e00', 0, 0, 'INTRO', 'Welcome to the SecAI+ Bootcamp Course',[
+ sl('How this course works',[
+  ch('60-minute exam, 60 questions, passing score 600 of 900','Here is what you are working toward. The CompTIA SecAI+ exam, code C Y zero dash zero zero one, is sixty questions in sixty minutes, mixing multiple choice with performance-based questions, and the passing score is six hundred on a scale of one hundred to nine hundred.'),
+  ch('Four domains, weighted very unevenly','The exam blueprint has four domains, and they are not weighted evenly. Securing AI Systems is forty percent all by itself. AI-assisted Security is twenty-four percent. Governance, Risk, and Compliance is nineteen percent. And Basic AI Concepts, the vocabulary domain, is seventeen percent.'),
+  ch('This course follows the weighting, not the page order','Because of that, this course spends the most time on Securing AI Systems, less on AI-assisted Security and Governance, and treats Basic AI Concepts as the vocabulary foundation everything else depends on.'),
+  ch('Sit back, listen, and let each episode auto-advance','Each episode plays like a short lecture. Bullets highlight on screen as I talk through them, and when an episode ends, the next one starts automatically unless you turn that off. You can pause, rewind a slide, skip ahead, or change the playback speed at any time.')
+ ])
+]),
+
+ep('e01', 1, 1, '1.1', 'AI Types, Training, and Prompt Engineering',[
+ sl('Types of AI',[
+  ch('Generative AI creates new content','Generative AI is the branch of AI that produces new content, like text, images, or code, instead of just classifying or predicting based on existing data.'),
+  ch('Machine learning improves from data','Machine learning describes systems that improve their performance from data, without being explicitly reprogrammed for every new task.'),
+  ch('Deep learning uses multi-layer neural networks','Deep learning is a subset of machine learning that relies on neural networks with many layers stacked on top of each other.'),
+  ch('Transformers power modern LLMs through attention','Transformers are the architecture behind most modern large language models. Their defining feature is the attention mechanism, which lets the model weigh relationships across an entire input at once, rather than reading it strictly word by word.'),
+  ch('NLP is the broader field; LLMs and SLMs are implementations','Natural language processing, or N L P, is the broad field of machines working with human language. Large language models and small language models are specific implementations within that field.')
+ ]),
+ sl('LLMs, SLMs, and GANs',[
+  ch('LLM: broad, general-purpose, resource-heavy','A large language model is broad, general-purpose, and resource-heavy. It is trained on huge, diverse datasets and can handle a wide range of tasks.'),
+  ch('SLM: narrower, cheaper, often edge-deployed','A small language model is narrower in scope, cheaper to run, and often fine-tuned for one specific task or deployed directly on a device with limited compute.'),
+  ch('GAN: generator vs. discriminator, common in deepfakes','A generative adversarial network, or GAN, pits two networks against each other. A generator creates content, and a discriminator tries to tell real from fake. The generator improves by learning to fool the discriminator. This is the technology behind most deepfakes, which becomes very relevant again later in this course.')
+ ]),
+ sl('Training concepts',[
+  ch('Supervised learning uses labeled data','Supervised learning trains a model on labeled input and output pairs, so it learns a mapping between the two.'),
+  ch('Unsupervised learning finds patterns without labels','Unsupervised learning finds clusters or patterns in data that has no labels at all.'),
+  ch('Reinforcement learning uses reward and penalty','Reinforcement learning shapes behavior through a feedback loop of rewards and penalties, rather than labeled examples.'),
+  ch('Fine-tuning specializes a pre-trained model','Fine-tuning takes a model that has already been trained broadly, and trains it further on a narrower, domain-specific dataset.'),
+  ch('Pruning removes weights; quantization lowers precision','Pruning shrinks a model by removing weights it does not need. Quantization shrinks it a different way, by reducing the numerical precision of the weights that remain, which speeds up inference at some cost to accuracy.')
+ ]),
+ sl('Prompt engineering vocabulary',[
+  ch('System prompt sets behavior; user prompt is the input','A system prompt sets the model behavior or persona and is usually hidden from the end user. A user prompt is what the person actually types.'),
+  ch('Zero-shot, one-shot, and multi-shot prompting','Zero-shot means no examples are given. One-shot gives a single example. Multi-shot, also called few-shot, gives several examples to steer the format or quality of the output.'),
+  ch('Prompt templates double as a security control','A prompt template is a reusable, structured prompt pattern. Later this week, you will see prompt templates come back as an actual security control, because they limit how much free text an attacker can inject.'),
+  ch('Exam angle: know why an LLM differs from an SLM','On the exam, expect questions asking you to explain why a large language model differs from a small one, and when you would choose to fine-tune a model instead of simply prompt-engineering it.')
+ ]),
+ sl('Model quality problems and dimensionality techniques',[
+  ch('Overfitting versus underfitting','Overfitting means a model performs beautifully on its training data but fails to generalize to new examples, because it essentially memorized the training set instead of learning the real pattern. Underfitting is the opposite problem: the model is too simple to capture the pattern at all, so it performs poorly even on the data it trained on.'),
+  ch('Concept drift is not the same as a training bug','Concept drift is when a deployed model\u2019s accuracy quietly degrades over time, because real-world data has shifted away from what it was originally trained on. A phishing-URL classifier trained last year missing this year\u2019s new phishing patterns is concept drift, not a bug in the model itself.'),
+  ch('Data imbalance skews minority-class accuracy','Data imbalance is a training set with far more examples of one class than another, which leads to poor prediction accuracy specifically for the underrepresented class.'),
+  ch('Precision, recall, and F1 score','These are the standard model evaluation metrics, tested against data the model has never seen before, not just the training set.'),
+  ch('PCA and k-means, two named techniques worth knowing','Principal component analysis, or PCA, reduces the number of features in a dataset while preserving the key patterns, which is useful for visualizing complex data like network traffic. K-means clustering is a common unsupervised technique for grouping similar data points together, for example to flag unusual traffic that does not fit any existing group.')
+ ])
+]),
+
+ep('e02', 1, 1, '1.2', 'Data Security and RAG Foundations',[
+ sl('Data hygiene concepts',[
+  ch('Lineage: traceable history of data','Data lineage is the traceable history of where a piece of data came from and how it was transformed along the way.'),
+  ch('Provenance: origin and authenticity','Data provenance is specifically about the origin and authenticity of that data source.'),
+  ch('Integrity means data has not been improperly altered','Data integrity is the assurance that data has not been changed in an unauthorized or unintended way.'),
+  ch('Cleansing removes errors and duplicates','Data cleansing is the process of removing errors, duplicates, and inconsistencies before that data is used to train or run a model.'),
+  ch('Structured, semi-structured, and unstructured data, and watermarking','Structured data lives in tables and databases, highly organized and easy to secure. Semi-structured data, like emails or log files, has some structure but needs custom validation. Unstructured data, like free text, images, and video, is the hardest to govern and makes up most AI training data. Watermarking embeds a hidden signal in AI-generated or training content, so its origin can be proven later.')
+ ]),
+ sl('Retrieval-Augmented Generation, or RAG',[
+  ch('RAG pulls in outside data at query time','RAG lets a model pull in external or enterprise data at the moment of the query, instead of relying only on what it learned during training.'),
+  ch('Embeddings capture semantic meaning as vectors','Embeddings are numerical vector representations of text or data that capture semantic meaning, so similar concepts end up close together mathematically.'),
+  ch('Vector databases store embeddings for fast search','A vector database stores those embeddings and supports fast similarity search. This is where your enterprise data actually meets model behavior, and it is a real, exploitable attack surface.'),
+  ch('Exam angle: leaks usually trace back to retrieval, not the model','If a scenario describes a chatbot leaking confidential internal data, the root cause is almost always missing access controls on the vector store or retrieval layer, not a flaw in the underlying model itself.')
+ ])
+]),
+
+ep('e03', 1, 1, '1.3', 'Security Throughout the AI Life Cycle',[
+ sl('The five life-cycle stages, in order',[
+  ch('One: the business case','It starts with the business case. Define the problem and the value before you ever touch data or a model.'),
+  ch('Two: data collection','Next is data collection, where sourcing, consent, and lineage tracking all begin.'),
+  ch('Three: model development and evaluation','Third is model development and evaluation, where the model is trained and tested against accuracy, bias, and security criteria.'),
+  ch('Four: deployment','Fourth is deployment, releasing the model into production with guardrails and access controls already in place.'),
+  ch('Five: ongoing monitoring','And fifth is ongoing monitoring. The life cycle does not end at launch. Drift, abuse, and new threats all have to be watched continuously.'),
+  ch('Exam angle: know the order','Expect ordering questions on the exam, like at which stage a particular control or activity should happen.')
+ ]),
+ sl('Human-centric design principles',[
+  ch('Human-in-the-loop: active participation','Human-in-the-loop means a human actively participates in the decision or output process.'),
+  ch('Human oversight: monitoring with intervention','Human oversight means humans monitor the system and can intervene, even if they are not reviewing every single transaction.'),
+  ch('Human validation: verifying before acting','Human validation means a human verifies or approves outputs before they are acted on, especially for high-consequence decisions.'),
+  ch('Exam angle: automated high-stakes actions are a red flag','If a scenario describes a model automatically freezing accounts or denying loans with zero human review, that is a gap in human oversight and validation. Flag that pattern immediately.')
+ ])
+]),
+
+ep('e04', 2, 2, '2.1', 'AI Threat-Modeling Resources',[
+ sl('Five catalogs, and when to reach for each',[
+  ch('OWASP LLM Top 10: top risks for LLM applications','The OWASP LLM Top 10 lists the top risks specific to large language model applications, things like prompt injection and insecure output handling.'),
+  ch('OWASP ML Security Top 10: broader ML risks','The OWASP Machine Learning Security Top 10 covers broader machine-learning risks that go beyond just language models.'),
+  ch('MITRE ATLAS: the ATT&CK for adversarial AI','MITRE ATLAS is the adversarial-AI counterpart to MITRE ATT&CK. It catalogs real-world adversary tactics and techniques specifically against AI systems.'),
+  ch('MIT AI Risk Repository: broad academic risk database','The MIT AI Risk Repository is a broad, academic and industry-sourced database of AI risks across many categories, useful for governance-style framing.'),
+  ch('CVE AI Working Group: tracked, numbered vulnerabilities','The CVE AI Working Group extends the standard CVE vulnerability tracking process specifically to AI vulnerabilities.'),
+  ch('Exam angle: match the described weakness to the right catalog','On the exam, you will be given a description of a weakness or need, and asked to pick which framework or resource actually models it.')
+ ])
+]),
+
+ep('e05', 2, 2, '2.2', 'Security Controls for AI Systems',[
+ sl('Model controls',[
+  ch('Guardrails constrain input and output','Guardrails are rules or filters that constrain what the model will accept as input or produce as output.'),
+  ch('Model evaluation tests ongoing quality and security','Model evaluation is the ongoing testing of a model for accuracy, bias, and security regressions over time.'),
+  ch('Prompt templates reduce free-text injection surface','Prompt templates constrain the format of what a user can submit, which reduces how much free text an attacker actually has to inject malicious instructions into.')
+ ]),
+ sl('Gateway controls: the chokepoint before the model',[
+  ch('Prompt firewall filters input before the model sees it','A prompt firewall inspects and filters prompts before they ever reach the model, functioning much like a web application firewall does for ordinary web traffic.'),
+  ch('Rate limits cap requests; token limits cap size','Rate limits cap how many requests a user or key can make in a given time window. Token limits cap the size of a single input or output, which controls cost and shrinks the abuse surface.'),
+  ch('Input quotas, modality limits, and endpoint access controls','Input quotas cap total usage over a longer period. Modality limits restrict which input or output types are even allowed, like text only, no images. And endpoint access controls decide who or what can reach the API in the first place.'),
+  ch('Exam angle: model controls shape the model, gateway controls shape what reaches it','Expect requirement-matching questions where you are given a list of requirements and have to choose the right control stack. Model controls shape what the model itself does. Gateway controls shape what is even allowed to reach the model.')
+ ])
+]),
+
+ep('e06', 2, 2, '2.3', 'Access Controls for AI Systems',[
+ sl('Four layers of access control',[
+  ch('Model access: who can invoke the model','Model access governs who or what can invoke the model at all.'),
+  ch('Data access: who can reach the underlying data','Data access governs who or what can reach the underlying training data or any RAG-connected data store.'),
+  ch('Agent access: the newest, most exam-relevant layer','Agent access governs what an autonomous AI agent is permitted to touch, execute, or call entirely on its own. This is the layer most candidates have not thought carefully about before, because agents can take real actions, like writing files or calling external APIs, without a human approving each step.'),
+  ch('Network and API access: traditional perimeter controls','Network and API access is the traditional network-layer and API-key-based restriction to the AI service itself.'),
+  ch('Exam angle: unapproved agent actions point straight to agent access','If a scenario describes an AI agent doing something on its own that it should not have been able to do, like deleting records or sending unauthorized emails, that is an agent access control failure. Hold onto that thought, because it connects directly to excessive agency later in this course.')
+ ])
+]),
+
+ep('e07', 2, 2, '2.4', 'Data Security Controls for AI Systems',[
+ sl('Three states of encryption',[
+  ch('In transit: data moving between systems','Encryption in transit protects data as it moves between systems, typically using T L S.'),
+  ch('At rest: data stored on disk','Encryption at rest protects data while it sits stored on disk.'),
+  ch('In use: the state most candidates forget','Encryption in use protects data while it is actively being processed in memory, during inference itself. This is the differentiator most candidates forget, and it is usually implemented through confidential computing, secure enclaves the cloud provider itself cannot see into, or homomorphic encryption, which performs computation directly on encrypted data without ever decrypting it at all.')
+ ]),
+ sl('The data-safety toolkit',[
+  ch('Anonymization irreversibly removes identifying information','Anonymization irreversibly removes identifying information from a dataset, so re-identification is not possible even if it is combined with other public data sources.'),
+  ch('Pseudonymization is the reversible cousin of anonymization','Pseudonymization replaces identifying data with a token or key instead of removing it outright. The critical difference from anonymization: whoever holds that key can still re-identify the person. Do not treat these as interchangeable on the exam.'),
+  ch('Classification labels tag data by sensitivity','Classification labels tag data as public, internal, confidential, or restricted, so automated controls can apply based on that tag.'),
+  ch('Redaction permanently removes sensitive elements','Redaction permanently removes sensitive elements from a document or output.'),
+  ch('Masking partially obscures a value for display','Masking partially obscures a value for display, like showing only the last four digits of an account number, while the full value may still exist elsewhere in the system.'),
+  ch('Minimization limits collection to what is actually needed','Data minimization means collecting and retaining only the data actually required for the task at hand.'),
+  ch('Exam angle: pick the exact right technique for the exposure described','Scenario questions hinge on picking the right technique for a described exposure. Partial display of sensitive data is masking. Irreversibly stripping identity from training data is anonymization. Know the difference cold.')
+ ])
+]),
+
+ep('e08', 2, 2, '2.5', 'Monitoring and Auditing for AI Systems',[
+ sl('Monitoring: ongoing, real-time posture',[
+  ch('Prompt monitoring watches both queries and responses','Prompt monitoring logs and reviews both the queries going in and the responses coming out, watching for abuse or drift.'),
+  ch('Log sanitization protects the logs themselves','Log sanitization and protection matters because logs can capture sensitive prompt content, so the logs need the same protection as the data they contain.'),
+  ch('Response-confidence tracking watches for degrading reliability','Response-confidence tracking watches the model confidence scores over time, to catch reliability degrading before it becomes a real problem.'),
+  ch('AI cost monitoring is unique to AI systems','AI cost monitoring tracks spend across prompts, storage, and processing. This one is unique to AI systems, and it matters because a sudden spike in spend can signal abuse or a compromised API key. Remember this one specifically, because it is an easy giveaway on the exam.'),
+  ch('Cost attribution is a distinct, related practice','Cost attribution is different from cost monitoring. Monitoring tracks the total spend. Attribution identifies which specific team or user is actually driving that spend, so if one department is responsible for seventy percent of monthly token consumption, attribution is what surfaces that.')
+ ]),
+ sl('Three rate-control concepts, frequently confused',[
+  ch('Rate monitoring: watching, no action taken','Rate monitoring watches for abnormal request patterns that might signal abuse or a malfunctioning client. It is detection only, no action.'),
+  ch('Rate limiting: a hard stop','Rate limiting actively rejects requests once they cross a defined threshold. That is a hard stop.'),
+  ch('Throttling: a soft response','Throttling is different again. It slows down the rate of processing to preserve availability under heavy load, without outright rejecting requests. Think of it as absorbing a legitimate demand surge gracefully, rather than turning users away.')
+ ]),
+ sl('Log and audit-trail integrity',[
+  ch('Segregation of duties prevents unsupervised self-approval','Segregation of duties means the same person should not both generate AI outputs and approve them for release without independent oversight.'),
+  ch('Append-only logs protect the audit trail itself','Append-only logs, often paired with encryption, prevent logs from being altered after the fact, which protects the integrity of the audit trail.'),
+  ch('Retention policy enforcement is itself a governance requirement','Logs and prompts should not be kept forever. Failing to define and enforce a retention window is a governance failure regulators will flag on its own.')
+ ]),
+ sl('Auditing: a quality and compliance lens',[
+  ch('Hallucinations: confidently false outputs','Auditing for hallucinations means checking for outputs that are stated confidently but are factually false.'),
+  ch('Accuracy: ongoing validation against ground truth','Accuracy auditing is ongoing validation of outputs against known ground truth.'),
+  ch('Consistency and completeness are two more named audit categories','Consistency auditing checks whether a model contradicts itself across similar questions, even when each individual answer is accurate. Completeness auditing checks whether outputs are missing required information, not just whether they are wrong.'),
+  ch('Bias and fairness has four named subtypes','Bias and fairness auditing checks whether the model produces disparate outcomes across different groups, and it breaks down into four subtypes: data bias, from skewed training data; representation bias, from underrepresented groups; algorithmic bias, from the model or algorithm itself; and outcome bias, disparate real-world results even when inputs were equal.'),
+  ch('Access: auditing who actually used the system','Access auditing reviews who actually used the system and what they touched.')
+ ])
+]),
+
+ep('e09a', 3, 2, '2.6', 'The Attack Taxonomy — Objective 2.6, Part One',[
+ sl('The single highest-value objective on the exam',[
+  ch('Six of Domain 2\u2019s objectives are scenario-based; this one carries the most weight','Every objective in the forty percent Securing AI Systems domain is written as, quote, given a scenario, unquote, which is CompTIA\u2019s own signal for applied, performance-based testing. Objective 2.6 is the largest single objective in that domain, and the most PBQ-heavy of all of them.')
+ ]),
+ sl('Attacks against the model and its data',[
+  ch('Prompt injection: malicious instructions smuggled into input','Prompt injection is malicious instructions smuggled into input, designed to override the model\u2019s intended behavior.'),
+  ch('Jailbreaking: bypassing safety restrictions','Jailbreaking is a set of techniques used to bypass a model\u2019s built-in safety or behavior restrictions.'),
+  ch('Data poisoning corrupts training data itself','Data poisoning corrupts the training data itself, so the model learns the wrong associations.'),
+  ch('Model poisoning tampers with weights directly','Model poisoning is different. It tampers directly with the model\u2019s weights or parameters, rather than the data that produced them.'),
+  ch('Model skewing is the slow, deceptive-feedback version of poisoning','Model skewing is a quieter cousin of poisoning. Users intentionally feed a model deceptive feedback over time, gradually biasing its behavior in their favor, without any single event tripping an alarm.'),
+  ch('Model inversion reconstructs training data from outputs','Model inversion reconstructs sensitive training data by carefully probing the model\u2019s outputs.'),
+  ch('Membership inference: was this record in the training set?','Membership inference determines whether one specific record was part of the training set at all. This is fundamentally a privacy attack.')
+ ]),
+ sl('Attacks on availability, supply chain, and output handling',[
+  ch('Model theft: extracting parameters through queries','Model theft is stealing a model\u2019s parameters or architecture, either through systematic extraction queries or direct exfiltration.'),
+  ch('Indirect model theft is quieter still','Indirect model theft is subtler. An attacker infers a model\u2019s proprietary behavior just from detailed confidence scores returned with every prediction, without ever directly exfiltrating anything.'),
+  ch('Input manipulation targets inference time, not training','Input manipulation crafts adversarial inputs, subtly altered images, text, or files, that cause a model to misclassify. The classic example is a modified stop sign that an autonomous vehicle\u2019s model reads as a yield sign.'),
+  ch('AI supply-chain and transfer-learning attacks: risk inherited from upstream','When you build on a pretrained model or an external dataset, you inherit whatever risk was hidden upstream. A poisoned public model can persist even after your own fine-tuning and deployment.'),
+  ch('Model denial of service: exhausting compute and cost','Model denial of service overwhelms a model with expensive queries specifically to exhaust its compute budget or cost, and take it offline.'),
+  ch('Insecure output handling: trusting model output blindly','Insecure output handling means treating a model\u2019s output as safe and passing it downstream, into a shell or a database query, without validating it first.'),
+  ch('Excessive agency: an agent with more autonomy than it needs','Excessive agency is an AI agent granted more autonomy or permissions than its actual task requires, which opens the door to unintended and often destructive actions.'),
+  ch('Overreliance: the human failure mode, not the model\u2019s','And overreliance is different again. It is a human trusting model output without verifying it. Excessive agency is about what the model or agent is permitted to do. Overreliance is about what the human fails to check.')
+ ])
+]),
+
+ep('e09b', 3, 2, '2.6', 'Attack-to-Control Mapping — Objective 2.6, Part Two',[
+ sl('Mapping every attack to its compensating control',[
+  ch('Prompt injection and jailbreaking: firewalls, guardrails, templates','Prompt injection and jailbreaking are countered with prompt firewalls, guardrails, constrained prompt templates, and proactive jailbreak testing before attackers try it themselves.'),
+  ch('Data, model poisoning, and model skewing: integrity and provenance checks','Data poisoning, model poisoning, and model skewing are all countered with data integrity controls, provenance and lineage verification, and vetting your AI supply chain before you trust it.'),
+  ch('Theft, indirect theft, inversion, and membership inference: limit and restrict access','Model theft, indirect model theft, model inversion, and membership inference are all countered by rate limiting, suppressing detailed output like confidence scores, tightening access controls, and sometimes differential privacy techniques.'),
+  ch('Input manipulation: adversarial training and validation','Input manipulation is countered with adversarial training, deliberately including adversarial examples in the training set to build robustness, plus strict input validation.'),
+  ch('Supply-chain and transfer-learning attacks: vet before you trust','Supply-chain and transfer-learning attacks are countered by vetting pretrained models and datasets before adoption, and treating any upstream source as untrusted until verified.'),
+  ch('Model denial of service: rate limits, token limits, cost monitoring','Model denial of service is countered with rate limits, token limits, and active cost monitoring that alerts on abnormal spend.'),
+  ch('Insecure output handling: treat all output as untrusted','Insecure output handling is countered by a mindset shift: treat model output as untrusted input downstream, and validate or sanitize it before it is executed or queried against anything.'),
+  ch('Excessive agency: least privilege and human approval','Excessive agency is countered with agent access controls, least privilege, and requiring human approval before an agent takes any consequential action.'),
+  ch('Overreliance: mandatory human review, not just model restrictions','Overreliance is countered differently. It needs mandatory human review and validation gates on high-consequence output, not just restricting what the model itself can do.'),
+  ch('This is the one objective to genuinely over-prepare','If you drill exactly one thing from this entire course, drill this attack-to-control mapping until it is automatic, now covering all fifteen attack types, not just the original eleven. It is the single highest-leverage skill on the whole exam.')
+ ])
+]),
+
+ep('e10', 4, 3, '3.1', 'AI-Enabled Tools for Security Tasks',[
+ sl('The tool landscape',[
+  ch('IDE, browser, and CLI plug-ins embed AI into existing work','AI now shows up embedded directly into existing workflows, through I D E plug-ins, browser extensions, and command-line tools.'),
+  ch('Chatbots and personal assistants support analyst triage','Chatbots and personal assistants give analysts a fast, conversational way to get support during triage.'),
+  ch('Model Context Protocol servers: current and exam-relevant','Model Context Protocol servers, usually just called M C P, are a current standardized way for AI assistants to connect to external tools and data sources. This is genuinely current technology, and it is exam-relevant right now.')
+ ]),
+ sl('Use cases the exam cares about',[
+  ch('Anomaly detection, vulnerability analysis, automated pentesting','Anomaly detection, vulnerability analysis, and automated penetration testing are all named use cases.'),
+  ch('Incident management and threat modeling support','So are incident management and general threat-modeling support.'),
+  ch('Fraud detection and summarization','And so are fraud detection, plus summarization, which turns huge volumes of logs and alerts into a readable analyst summary.'),
+  ch('Exam angle: match the task to the right tool category','Expect questions that pair a specific task with the correct tool category, so know which use case belongs where.')
+ ])
+]),
+
+ep('e11', 4, 3, '3.2', 'How AI Enables or Enhances Attack Vectors',[
+ sl('This objective got a full dedicated chapter in the official study guide',[
+  ch('Do not treat this as a throwaway topic','Earlier drafts of this course under-covered objective 3.2. The official CompTIA study guide devotes an entire chapter to it. Treat it with the same seriousness as anything in Domain 2.')
+ ]),
+ sl('Impersonation and manipulation',[
+  ch('Deepfakes enable impersonation','Deepfakes use synthetic AI-generated media, video or voice, to impersonate real people.'),
+  ch('Misinformation and disinformation are not the same thing','These two terms get conflated constantly, and the exam tests the difference. Misinformation is unintentionally spreading false content, people sharing something because they believe it is real. Disinformation is a deliberate, organized attempt to manipulate opinion. Same content can be either one, depending entirely on intent behind the spread.'),
+  ch('AI-accelerated recon and social engineering at scale','AI-accelerated reconnaissance automates target research and lets attackers craft highly personalized social engineering, at a scale that was not possible before.')
+ ]),
+ sl('Named malicious tools and polymorphic malware',[
+  ch('Obfuscation and AI-rewritten malware evade signature detection','AI rewrites malicious code into endless unique variants that evade traditional signature-based detection.'),
+  ch('WormGPT and FraudGPT: malicious LLMs built for attackers','Two named real-world tools worth remembering by name: WormGPT and FraudGPT, malicious large language models purpose-built for generating phishing emails and malware scripts.'),
+  ch('BlackMamba: malware that generates itself at runtime','BlackMamba is a named malware example with no malicious code visible under static analysis at all. Instead, it queries a large language model at runtime to generate a fresh keylogger on the fly, every single time it runs.')
+ ]),
+ sl('Correlation, automation, honeypots, and adaptive DDoS',[
+  ch('Automated data correlation stitches together leaked data','Automated data correlation lets attackers use AI to stitch together scattered leaked or public data into genuinely actionable intelligence, prioritizing the most exploitable targets.'),
+  ch('Automated attack generation runs entire intrusions end to end','Automated attack generation lets AI agents automate an entire intrusion end to end, scanning, selecting exploits, and executing, letting even unskilled attackers run multistep campaigns without writing code themselves.'),
+  ch('AI-powered honeypot detection and evasion, and the reverse','Attackers use machine learning to analyze service responses and identify honeypots before ever engaging with them. And the reverse happens too. Attackers build convincing fake honeypots of their own, specifically to harvest credentials or malware samples from security researchers.'),
+  ch('AI-powered DDoS adapts in real time','AI-driven botnets analyze live traffic conditions and adapt in real time, shifting ports, packet types, and timing based on feedback. That makes them far harder to block with static rule sets than a traditional denial-of-service attack.'),
+  ch('Exam angle: recognize the pattern, this is a conceptual objective','This objective is written as, quote, explain, unquote, so expect recognition-style questions rather than hands-on simulation. A fake video call authorizing a wire transfer is deepfake-enabled impersonation. A viral false image with no organized campaign behind it is misinformation; the same image pushed deliberately is disinformation. Read for intent.')
+ ])
+]),
+
+ep('e12', 4, 3, '3.3', 'Using AI to Automate Security Tasks',[
+ sl('Three automation tiers, not two',[
+  ch('No-code: visual and natural-language only, zero scripting','No-code platforms use only visual interfaces or natural-language input, with no scripting at all.'),
+  ch('Low-code: visual tools plus some scripting flexibility','Low-code platforms build on visual tools but allow some scripting for extra flexibility. AI lowers the barrier at every tier, by generating scripts from plain natural language.'),
+  ch('Document synthesis turns raw findings into reports','Document synthesis takes raw findings and turns them into a polished, readable report, the exact kind of work this course has been doing for you all week.')
+ ]),
+ sl('Change management, agents, and CI/CD depth',[
+  ch('AI-assisted change management covers the whole change cycle','AI can assess proposed changes, auto-approve routine updates, recommend rollbacks, and monitor for unexpected behavior during deployment.'),
+  ch('What actually makes something an agent, not just a script','AI agents can perform multi-step security work entirely on their own. The real differentiator from a plain automation script is that an agent can plan, adapt, and act independently within its guardrails, rather than following one fixed, predetermined sequence.'),
+  ch('Static versus dynamic code analysis inside CI/CD','Static analysis examines code without ever running it, spotting insecure patterns or hardcoded secrets. Dynamic analysis observes the application\u2019s actual live behavior instead. Modern AI-assisted pipelines use both.'),
+  ch('Automated rollback is its own distinct capability','Automated rollback is a distinct CI/CD capability. AI monitors live performance metrics right after deployment, and automatically reverts to the prior version if error rates or response times spike, alerting the team as it happens.')
+ ])
+]),
+
+ep('e13', 4, 4, '4.1', 'Governance Structures That Support AI',[
+ sl('Three governance structures, not just one',[
+  ch('Centralized Center of Excellence','A centralized Center of Excellence is one team that sets standards, manages the platform, and supports project teams directly.'),
+  ch('Hub-and-spoke: the mature evolution','As AI programs mature, many organizations shift to hub-and-spoke. The Center of Excellence becomes the hub, providing shared resources and oversight, while individual business units, the spokes, drive their own execution.'),
+  ch('Embedded: fastest, but riskiest for consistency','The embedded model puts AI roles fully inside product teams, with only a light central coordination layer. The trade-off is real: faster delivery, but a higher risk of duplicated effort and inconsistent controls across teams.'),
+  ch('Policies and procedures formalize acceptable AI use','AI policies and procedures are the formal, documented rules governing acceptable AI use, development, and deployment.')
+ ]),
+ sl('The expanding cast of AI roles',[
+  ch('Data scientist and data engineer are two different jobs','A data scientist builds and analyzes models and data pipelines. A data engineer is a distinct role: they build and maintain the data pipelines themselves, and own data quality and data lineage for training datasets specifically.'),
+  ch('AI architect and ML engineer','An AI architect designs the overall system architecture. An ML engineer builds and productionizes those models.'),
+  ch('MLOps engineer owns the operational pipeline','An MLOps engineer owns the operational health of the deployment and monitoring pipeline, essentially the ML equivalent of a DevOps engineer.'),
+  ch('AI security architect, governance engineer, risk analyst, and auditor','An AI security architect designs security controls specific to AI systems. An AI governance engineer implements governance tooling and process. An AI risk analyst assesses and quantifies AI risk, often conducting privacy impact assessments before a project is even approved. And an AI auditor independently reviews AI systems for compliance and quality.'),
+  ch('Exam angle: match the responsibility to the right role','Expect questions asking who is responsible for a specific task, so know these roles by their actual job, not just their title. And if a scenario describes a fully decentralized structure with minimal central coordination, that is the embedded model, and its named risk is duplicated effort, not slow delivery.')
+ ])
+]),
+
+ep('e14', 5, 4, '4.2', 'Risks Associated with AI',[
+ sl('Responsible-AI principles — eight of them, not seven',[
+  ch('Fairness, reliability and safety, transparency, privacy','The responsible-AI principles are fairness, reliability and safety, transparency, and privacy.'),
+  ch('Explainability, inclusiveness, and accountability','Along with explainability, inclusiveness, and accountability.'),
+  ch('Consistency: the principle most study materials leave off entirely','And there is an eighth principle, one that shorter study materials frequently leave off the list entirely: consistency. Consistency means a model behaves predictably given similar inputs, not just accurately. Every practical risk on this list ultimately traces back to violating one of these eight principles.')
+ ]),
+ sl('The practical risk list',[
+  ch('Bias introduction and accidental data leakage','Bias introduction happens when outputs systematically disadvantage a group. Accidental data leakage happens when sensitive data is unintentionally surfaced in output.'),
+  ch('Reputational damage and model accuracy drift','Reputational damage comes from public-facing AI failures that damage trust. Model accuracy drift is performance quietly degrading as real-world data shifts away from the training data.'),
+  ch('IP risk and autonomous-system risk','IP risk covers training on or generating content that infringes intellectual property. Autonomous-system risk is the risk introduced specifically by systems acting without direct human control.'),
+  ch('Shadow AI: unsanctioned tool use, the modern shadow IT','And shadow AI is unsanctioned AI tool use inside the business, the modern version of shadow IT. Memorize this one by name. An employee pasting confidential data into an unapproved public chatbot is the classic exam scenario, and it is nearly guaranteed to show up.')
+ ])
+]),
+
+ep('e15', 5, 4, '4.3', 'Compliance Impact on AI Use and Development',[
+ sl('The regulatory map',[
+  ch('EU AI Act: the only legally binding one on this list','The EU AI Act is risk-tiered regulation for AI systems touching the European Union, and it is the only entry on this list that is actually legally binding law, not a voluntary framework.'),
+  ch('Four EU AI Act risk tiers, worth knowing by name','There are four tiers. Unacceptable risk is prohibited outright, a government social-scoring system is the named example. High risk carries heavy obligations: documentation, transparency, human oversight, impact assessments. Limited risk carries lighter obligations, like a general chatbot having to disclose that it is AI. And minimal risk carries no special obligations at all.'),
+  ch('NIST AI RMF: govern, map, measure, manage','The NIST AI Risk Management Framework is the voluntary U S framework, built around four functions: govern, map, measure, and manage.'),
+  ch('ISO AI standards and OECD standards','ISO AI standards define international requirements for AI management systems, and OECD standards set international principles for trustworthy AI.'),
+  ch('Exam angle: know which framework applies, not the statute text','You do not need to memorize statute text for this exam. You need to know which framework applies to a described situation, and specifically which one is legally binding versus voluntary.')
+ ]),
+ sl('The corporate policy document hierarchy',[
+  ch('Policy, standard, procedure, and guideline are four different things','This is a real distinction the exam tests, so do not treat these words as interchangeable. A policy is the top-level statement of what is allowed and why. A standard is the specific, measurable bar every implementation must meet. A procedure is the step-by-step how for meeting that standard. And a guideline is recommended but flexible, non-mandatory practice.'),
+  ch('Exam angle: match the sentence to the document type','If a scenario quotes a sentence like, data should be encrypted before being used in any AI training, that reads like a measurable, mandatory bar, which makes it a standard, not a policy.')
+ ]),
+ sl('Corporate policy dimensions',[
+  ch('Sanctioned vs. unsanctioned tools, private vs. public models','Sanctioned versus unsanctioned tools ties directly back to shadow AI. Private versus public models is a distinct decision, about who else\u2019s data might touch a model you are sharing.'),
+  ch('Sensitive-data governance and third-party compliance evaluation','Sensitive-data governance covers AI-connected systems specifically, and a third-party compliance evaluation should happen before adopting any vendor AI tool.'),
+  ch('Data sovereignty: where data lives, whose law applies','Data sovereignty is about where data physically resides, and which jurisdiction\u2019s law actually applies to it.')
+ ])
+]),
+
+ep('e16', 5, 0, 'CLOSE', 'Exam Strategy and the Go/No-Go Decision',[
+ sl('Your study order should follow the weighting',[
+  ch('Domain 2 first and deepest: forty percent of the exam','Securing AI Systems is forty percent of the exam and carries the most scenario-based questions. It deserves the most of your remaining review time.'),
+  ch('Domain 3 and 4 next: another forty-three percent combined','AI-assisted Security and Governance, Risk, and Compliance together make up another forty-three percent. Domain 3 rewards hands-on familiarity with AI tooling. Domain 4 rewards practicing scenarios, not memorizing regulation text.'),
+  ch('Domain 1 runs in the background as vocabulary','Basic AI Concepts is vocabulary. Review it for orientation, then reinforce it with flashcards rather than dedicating heavy blocks of time to it.')
+ ]),
+ sl('Go, or no-go?',[
+  ch('Go if: simulation score is comfortably above the passing bar','Book the real exam if your practice simulation score sits comfortably above the six hundred passing threshold, with margin, not just barely over it.'),
+  ch('Go if: no objective is self-rated below a two','Book it if none of the fifteen sub-objectives are still sitting at a self-rating of one in your tracker.'),
+  ch('Go if: you can explain the attack-to-control mapping from memory','And book it if you can explain the attack-to-control mapping for at least eight of the eleven attack types in objective 2.6, from memory, without looking anything up.'),
+  ch('If you are not there yet, that is fine, keep drilling','If you are not there yet, that is completely fine. Go back through your weakest domain, rerun the attack-to-control matching drill, and take the practice simulation again before you schedule anything.'),
+  ch('You have covered the full blueprint. Good work.','Either way, you have now covered every domain and every sub-objective on the real CY0-001 blueprint. That is the whole game. Go get it.')
+ ])
+])
+];
+
+/* ============================== STATE & STORAGE ============================== */
+const STORE_KEY='secai-video-progress-v1';
+let STATE={ completed:{}, rate:1, voiceURI:null, autoplay:true };
+async function loadState(){
+  try{ const r=await window.storage.get(STORE_KEY,false); if(r&&r.value) STATE=Object.assign(STATE, JSON.parse(r.value)); }catch(e){}
+}
+let saveTimer=null;
+function saveState(){ clearTimeout(saveTimer); saveTimer=setTimeout(async ()=>{ try{ await window.storage.set(STORE_KEY, JSON.stringify(STATE), false);}catch(e){} },300); }
+
+/* ============================== PLAYER STATE ============================== */
+let curEp=0, curSlide=0, curChunk=0;
+let isPlaying=false;
+let ttsSupported = ('speechSynthesis' in window);
+let voices=[];
+let fallbackTimer=null;
+
+function flatChunks(episode){
+  const out=[];
+  episode.slides.forEach((s,si)=>{ s.chunks.forEach((c,ci)=>{ out.push({si,ci,cap:c.cap,say:c.say}); }); });
+  return out;
+}
+
+/* ============================== RENDER: PLAYLIST ============================== */
+function renderPlaylist(){
+  const doneCount = EPISODES.filter(e=>STATE.completed[e.id]).length;
+  const pct = Math.round((doneCount/EPISODES.length)*100);
+  document.getElementById('plPct').textContent = pct+'%';
+  document.getElementById('plFill').style.width = pct+'%';
+
+  const note = document.getElementById('supportNote');
+  if(!ttsSupported){
+    note.innerHTML = '<div class="support-note warn">Your browser has no built-in narrator voice available here, so this plays as a paced, auto-advancing slideshow with captions instead of spoken audio.</div>';
+  } else {
+    note.innerHTML = '<div class="support-note">Uses your device\u2019s built-in narrator voice. Quality varies by phone/browser \u2014 try a different voice below if it sounds off.</div>';
+  }
+
+  const pl=document.getElementById('playlist');
+  pl.innerHTML='';
+  let lastDay=null;
+  EPISODES.forEach((e,i)=>{
+    if(e.day!==lastDay){
+      lastDay=e.day;
+      const h=document.createElement('div'); h.className='dayhead';
+      h.textContent = e.day===0? 'Start Here' : 'Day '+e.day;
+      pl.appendChild(h);
+    }
+    const row=document.createElement('div'); row.className='ep'+(i===curEp?' active':'');
+    const dotCls = i===curEp && isPlaying ? 'dot playing' : STATE.completed[e.id] ? 'dot done' : 'dot';
+    row.innerHTML = '<span class="num mono">'+(i+1)+'</span><span class="'+dotCls+'"></span>'+
+      '<div class="meta"><div class="ttl">'+e.title+'</div><div class="sub">'+(e.code!=='CLOSE'&&e.code!=='INTRO'? 'Obj '+e.code : e.code)+'</div></div>';
+    row.onclick=()=>loadEpisode(i,true);
+    pl.appendChild(row);
+  });
+}
+
+/* ============================== RENDER: SCREEN ============================== */
+function renderScreen(){
+  const e = EPISODES[curEp];
+  const chunks = flatChunks(e);
+  const cur = chunks[curChunk] || chunks[0];
+  document.getElementById('epCode').textContent = (e.code==='CLOSE'||e.code==='INTRO') ? e.code : 'OBJECTIVE '+e.code;
+  document.getElementById('epTitle').textContent = e.slides[cur.si].heading;
+
+  const bWrap=document.getElementById('bullets');
+  bWrap.innerHTML='';
+  e.slides[cur.si].chunks.forEach((c,ci)=>{
+    const d=document.createElement('div');
+    d.className='bullet'+(ci===cur.ci?' active':ci<cur.ci?' past':'');
+    d.textContent=c.cap;
+    d.onclick=()=>{ jumpToChunk(cur.si, ci); };
+    bWrap.appendChild(d);
+  });
+
+  document.getElementById('captionText').textContent = cur.say;
+  document.getElementById('timecode').textContent = 'Slide '+(cur.si+1)+'/'+e.slides.length+' \u00b7 Line '+(curChunk+1)+'/'+chunks.length;
+  document.getElementById('scrubFill').style.width = Math.round(((curChunk+1)/chunks.length)*100)+'%';
+
+  document.getElementById('btnPlay').textContent = isPlaying? '❚❚' : '▶';
+  document.getElementById('viz').classList.toggle('paused', !isPlaying);
+
+  document.getElementById('btnPrevEp').disabled = curEp===0;
+  document.getElementById('btnNextEp').disabled = curEp===EPISODES.length-1;
+}
+
+function jumpToChunk(si, ci){
+  const e=EPISODES[curEp];
+  const chunks=flatChunks(e);
+  const idx = chunks.findIndex(c=>c.si===si && c.ci===ci);
+  if(idx<0) return;
+  stopSpeaking();
+  curChunk=idx;
+  renderScreen();
+  if(isPlaying) speakCurrent();
+}
+
+/* ============================== VOICES ============================== */
+function populateVoices(){
+  if(!ttsSupported) return;
+  voices = window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));
+  if(!voices.length) voices = window.speechSynthesis.getVoices();
+  const sel=document.getElementById('voiceSel');
+  sel.innerHTML='';
+  voices.forEach(v=>{
+    const o=document.createElement('option'); o.value=v.voiceURI; o.textContent=v.name+' ('+v.lang+')';
+    if(v.voiceURI===STATE.voiceURI) o.selected=true;
+    sel.appendChild(o);
+  });
+  if(!STATE.voiceURI && voices.length) STATE.voiceURI = voices[0].voiceURI;
+}
+if(ttsSupported){
+  window.speechSynthesis.onvoiceschanged = populateVoices;
+}
+
+/* ============================== SPEAKING ENGINE ============================== */
+function stopSpeaking(){
+  if(ttsSupported) window.speechSynthesis.cancel();
+  clearTimeout(fallbackTimer);
+}
+function speakCurrent(){
+  stopSpeaking();
+  const e=EPISODES[curEp];
+  const chunks=flatChunks(e);
+  const cur=chunks[curChunk];
+  if(!cur) return;
+
+  if(ttsSupported){
+    const u = new SpeechSynthesisUtterance(cur.say);
+    u.rate = Number(STATE.rate)||1;
+    const v = voices.find(vv=>vv.voiceURI===STATE.voiceURI);
+    if(v) u.voice=v;
+    u.onend=()=>{ if(isPlaying) advance(); };
+    u.onerror=()=>{ if(isPlaying) advance(); };
+    window.speechSynthesis.speak(u);
+  } else {
+    // fallback: pace by estimated reading time (~2.6 words/sec at 1x)
+    const words = cur.say.split(/\s+/).length;
+    const ms = Math.max(1400, (words/2.6/(Number(STATE.rate)||1))*1000);
+    fallbackTimer=setTimeout(()=>{ if(isPlaying) advance(); }, ms);
+  }
+}
+function advance(){
+  const e=EPISODES[curEp];
+  const chunks=flatChunks(e);
+  if(curChunk < chunks.length-1){
+    curChunk++;
+    renderScreen();
+    speakCurrent();
+  } else {
+    STATE.completed[e.id]=true; saveState();
+    if(curEp < EPISODES.length-1 && STATE.autoplay){
+      loadEpisode(curEp+1, true);
+    } else {
+      isPlaying=false;
+      renderScreen(); renderPlaylist();
+    }
+  }
+}
+
+/* ============================== TRANSPORT CONTROLS ============================== */
+function play(){
+  isPlaying=true;
+  renderScreen(); renderPlaylist();
+  speakCurrent();
+}
+function pause(){
+  isPlaying=false;
+  stopSpeaking();
+  renderScreen(); renderPlaylist();
+}
+function loadEpisode(i, autoPlay){
+  stopSpeaking();
+  curEp=i; curChunk=0;
+  isPlaying=!!autoPlay;
+  renderScreen(); renderPlaylist();
+  if(isPlaying) speakCurrent();
+}
+function nextSlideBtn(){
+  const e=EPISODES[curEp]; const chunks=flatChunks(e);
+  const cur=chunks[curChunk];
+  const nextSlideIdx=Math.min(e.slides.length-1, cur.si+1);
+  const idx=chunks.findIndex(c=>c.si===nextSlideIdx && c.ci===0);
+  if(idx>=0){ stopSpeaking(); curChunk=idx; renderScreen(); if(isPlaying) speakCurrent(); }
+}
+function prevSlideBtn(){
+  const e=EPISODES[curEp]; const chunks=flatChunks(e);
+  const cur=chunks[curChunk];
+  const prevSlideIdx=Math.max(0, cur.si-1);
+  const idx=chunks.findIndex(c=>c.si===prevSlideIdx && c.ci===0);
+  if(idx>=0){ stopSpeaking(); curChunk=idx; renderScreen(); if(isPlaying) speakCurrent(); }
+}
+
+/* ============================== WIRE UP ============================== */
+document.getElementById('btnPlay').onclick=()=>{ isPlaying? pause() : play(); };
+document.getElementById('btnNextSlide').onclick=nextSlideBtn;
+document.getElementById('btnPrevSlide').onclick=prevSlideBtn;
+document.getElementById('btnPrevEp').onclick=()=>{ if(curEp>0) loadEpisode(curEp-1,true); };
+document.getElementById('btnNextEp').onclick=()=>{ if(curEp<EPISODES.length-1) loadEpisode(curEp+1,true); };
+document.getElementById('rateSel').onchange=(e)=>{ STATE.rate=e.target.value; saveState(); if(isPlaying) speakCurrent(); };
+document.getElementById('voiceSel').onchange=(e)=>{ STATE.voiceURI=e.target.value; saveState(); if(isPlaying) speakCurrent(); };
+document.getElementById('autoplayChk').onchange=(e)=>{ STATE.autoplay=e.target.checked; saveState(); };
+document.getElementById('scrub').onclick=(e)=>{
+  const rect=e.currentTarget.getBoundingClientRect();
+  const pctClick=(e.clientX-rect.left)/rect.width;
+  const chunks=flatChunks(EPISODES[curEp]);
+  const idx=Math.min(chunks.length-1, Math.max(0, Math.floor(pctClick*chunks.length)));
+  stopSpeaking(); curChunk=idx; renderScreen(); if(isPlaying) speakCurrent();
+};
+
+(async function init(){
+  await loadState();
+  document.getElementById('rateSel').value = STATE.rate||1;
+  document.getElementById('autoplayChk').checked = STATE.autoplay!==false;
+  if(ttsSupported){ populateVoices(); setTimeout(populateVoices,300); }
+  renderPlaylist();
+  renderScreen();
+})();
+</script>
+</body>
+</html>
