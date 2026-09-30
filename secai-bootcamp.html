@@ -268,8 +268,40 @@
   .key-btn.vowel{color:var(--amber);}
   .key-btn:disabled{opacity:.35;cursor:not-allowed;}
   .g-input{font-family:var(--mono);font-size:14px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#0B1220;color:var(--ink);min-width:240px;}
+  /* ---------- PBQ Simulator ---------- */
+  .pbq-diagram{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .pbq-node{flex:1;min-width:180px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .pbq-node .ico{font-size:20px;}
+  .pbq-node h4{font-family:var(--disp);font-size:14px;margin:6px 0 10px;}
+  .pbq-node select{
+    width:100%;font-family:var(--mono);font-size:12px;padding:8px;margin-bottom:8px;border-radius:8px;
+    border:1px solid var(--line);background:#0B1220;color:var(--ink);
+  }
+  .pbq-node select.right{border-color:var(--green);background:rgba(61,220,132,.10);}
+  .pbq-node select.wrong{border-color:var(--red);background:rgba(240,85,90,.10);}
+  .pbq-node select.right-ans{border-color:var(--green);color:var(--green);}
+  .pbq-arrow-row{display:flex;align-items:center;color:var(--ink-dim);font-family:var(--mono);padding:0 2px;}
+  .pbq-score-row{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;}
+  .pbq-slot-fb{font-size:11px;margin-top:-4px;margin-bottom:8px;line-height:1.4;color:var(--ink-dim);}
+  .pbq-slot-fb.ok{color:var(--green);} .pbq-slot-fb.bad{color:var(--red);}
+  .sort-pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;min-height:44px;padding:10px;background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;}
+  .sort-chip{
+    font-family:var(--mono);font-size:12.5px;padding:8px 12px;border-radius:8px;background:#101B32;border:1px solid var(--line);
+    color:var(--ink);cursor:pointer;
+  }
+  .sort-chip:hover{border-color:var(--cyan);}
+  .sort-chip.sel{border-color:var(--cyan);background:rgba(90,200,250,.15);}
+  .sort-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:6px;}
+  .sort-col{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:220px;cursor:pointer;}
+  .sort-col:hover{border-color:var(--cyan);}
+  .sort-col h4{font-family:var(--disp);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px;color:var(--ink-dim);}
+  .sort-col .placed{font-family:var(--mono);font-size:12px;padding:7px 9px;border-radius:7px;margin-bottom:6px;background:rgba(61,220,132,.12);border:1px solid var(--green);color:var(--ink);}
+  
   @media(max-width:900px){
     .pipe-row{flex-direction:column;}
+    .pbq-diagram{flex-direction:column;}
+    .pbq-arrow-row{justify-content:center;transform:rotate(90deg);padding:4px 0;}
+    .sort-cols{grid-template-columns:1fr;}
     .pipe-arrow{transform:rotate(90deg);}
     .jeo-tile{font-size:18px;padding:14px 2px;}
     .jeo-head{font-size:10px;}
@@ -1391,7 +1423,10 @@ function renderSidebar(){
     {label:'Games'},
     {key:'pipeline', name:'Defend the Pipeline'},
     {key:'jeopardy', name:'Jeopardy Board'},
-    {key:'wheel', name:'Wheel of Security'}
+    {key:'wheel', name:'Wheel of Security'},
+    {label:'PBQ Simulator'},
+    {key:'pbqarch', name:'Architecture Controls'},
+    {key:'pbqsort', name:'Framework Sort'}
   ];
   tools.forEach(t=>{
     if(t.label){ const lb=document.createElement('div'); lb.className='navlabel'; lb.textContent=t.label; nav.appendChild(lb); return; }
@@ -2380,6 +2415,181 @@ function renderWheel(){
 }
 
 
+
+/* ============================== PBQ SIMULATOR: ARCHITECTURE CONTROLS ============================== */
+const PBQ_NODES=[
+  {k:'cloud', name:'Cloud control plane', ico:'☁️', need:['IAM policies','Resource policies']},
+  {k:'gw',    name:'API Gateway',         ico:'🚪', need:['Connection rate limits','Authentication token validation']},
+  {k:'waf',   name:'WAF',                 ico:'🧱', need:['Threat protection','Input token validation']},
+  {k:'pfw',   name:'Prompt firewall',     ico:'🔥', need:['Injection policies','Guardrails']},
+  {k:'model', name:'Model',               ico:'⚙️', need:['Token input quota','Modality limitations']}
+];
+const PBQ_OPTIONS=['Select control'].concat(gShuffle(PBQ_NODES.flatMap(n=>n.need)));
+let PBQA=null;
+function pbqaNew(){
+  PBQA={picks:{}, checked:false, opts:gShuffle(PBQ_OPTIONS.slice(1))};
+  PBQ_NODES.forEach(n=>{ PBQA.picks[n.k]=['','']; });
+}
+function pbqaPick(nk, slot, val){
+  if(PBQA.checked) return;
+  PBQA.picks[nk][slot]=val;
+  renderPbqArch();
+}
+function pbqaCheck(){
+  PBQA.checked=true;
+  let right=0, total=0;
+  PBQ_NODES.forEach(n=>{
+    n.need.forEach((req,i)=>{ total++; if(PBQA.picks[n.k][i]===req) right++; });
+  });
+  PBQA.right=right; PBQA.total=total;
+  setBest('pbqArchBest', right);
+  SFX.play(right===total?'win':(right>=total*0.7?'correct':'wrong'));
+  renderPbqArch();
+}
+function renderPbqArch(){
+  if(!PBQA) pbqaNew();
+  const done = PBQA.checked;
+  const main=gameHeader('PBQ Simulator — Architecture Controls',
+    'Performance-based question style: assign each control to the layer where it actually belongs, edge to model.',
+    done?['SCORE: '+PBQA.right+' / '+PBQA.total, 'BEST: '+getBest('pbqArchBest')+' / 10']:['BEST: '+getBest('pbqArchBest')+' / 10']);
+
+  const intro=gEl('div','g-card');
+  intro.appendChild(gEl('p',null,'Every control below belongs on exactly one node. Pick two controls per node from the dropdowns, then check your answers. This mirrors the official exam\'s drag/select architecture diagrams.'));
+  main.appendChild(intro);
+
+  const dia=gEl('div','pbq-diagram');
+  PBQ_NODES.forEach((n,ni)=>{
+    const node=gEl('div','pbq-node');
+    node.appendChild(gEl('div','ico',n.ico));
+    node.appendChild(gEl('h4',null,n.name));
+    for(let slot=0; slot<2; slot++){
+      const sel=document.createElement('select');
+      const optAll=['Select control'].concat(PBQA.opts);
+      optAll.forEach(o=>{ const op=document.createElement('option'); op.value=o; op.textContent=o; sel.appendChild(op); });
+      sel.value=PBQA.picks[n.k][slot]||'Select control';
+      if(done){
+        sel.disabled=true;
+        if(sel.value===n.need[slot]) sel.classList.add('right');
+        else sel.classList.add('wrong');
+      } else {
+        sel.onchange=()=>pbqaPick(n.k, slot, sel.value==='Select control'?'':sel.value);
+      }
+      node.appendChild(sel);
+      if(done && sel.value!==n.need[slot]){
+        node.appendChild(gEl('div','pbq-slot-fb bad','Correct: '+n.need[slot]));
+      }
+    }
+    dia.appendChild(node);
+    if(ni<PBQ_NODES.length-1){ const ar=gEl('div','pbq-arrow-row','→'); dia.appendChild(ar); }
+  });
+  main.appendChild(dia);
+
+  const row=gEl('div','g-row'); row.style.marginTop='16px';
+  if(!done){
+    const allFilled=PBQ_NODES.every(n=>PBQA.picks[n.k][0] && PBQA.picks[n.k][1]);
+    const cb=gBtn('Check Answers','primary big',pbqaCheck); cb.disabled=!allFilled;
+    row.appendChild(cb);
+    if(!allFilled) row.appendChild(gEl('span','g-stat','Fill every slot before checking.'));
+  } else {
+    const msg = PBQA.right===PBQA.total ? 'Perfect — every control on the right layer.' :
+      PBQA.right>=PBQA.total*0.7 ? 'Solid, but review the misses below.' : 'Review the layer order and try again.';
+    main.appendChild(gEl('div','g-fb '+(PBQA.right===PBQA.total?'ok':'bad'), msg));
+    row.appendChild(gBtn('New attempt','primary big',()=>{ pbqaNew(); renderPbqArch(); }));
+  }
+  main.appendChild(row);
+}
+
+/* ============================== PBQ SIMULATOR: FRAMEWORK SORT ============================== */
+const PBQ_SORT_BANK=[
+  {t:'Broken access control', cat:'owasp', why:'General OWASP Top 10 web-application risk — not LLM-specific.'},
+  {t:'Cryptographic failures', cat:'owasp', why:'OWASP Top 10 — weak, missing, or misused encryption.'},
+  {t:'Authentication failures', cat:'owasp', why:'OWASP Top 10 — broken authentication/session handling.'},
+  {t:'Security misconfiguration', cat:'owasp', why:'OWASP Top 10 — insecure defaults or unnecessary features left enabled.'},
+  {t:'Vulnerable and outdated components', cat:'owasp', why:'OWASP Top 10 — using components with known vulnerabilities.'},
+  {t:'Prompt injection', cat:'llm', why:'OWASP Top 10 for LLM Applications — the #1 LLM-specific risk.'},
+  {t:'Training data poisoning', cat:'llm', why:'OWASP LLM Top 10 — corrupting the training data itself.'},
+  {t:'Overreliance', cat:'llm', why:'OWASP LLM Top 10 — humans trusting model output without verification.'},
+  {t:'Insecure output handling', cat:'llm', why:'OWASP LLM Top 10 — treating model output as trusted without validation.'},
+  {t:'Excessive agency', cat:'llm', why:'OWASP LLM Top 10 — a model/agent granted more capability than it needs.'},
+  {t:'Sensitive information disclosure', cat:'llm', why:'OWASP LLM Top 10 — the model reveals confidential data in its own output.'},
+  {t:'Supply chain vulnerabilities', cat:'llm', why:'OWASP LLM Top 10 — risk from third-party models, datasets, or plugins.'},
+  {t:'Spoofing', cat:'stride', why:'The S in STRIDE — impersonating a user or system.'},
+  {t:'Tampering', cat:'stride', why:'The T in STRIDE — unauthorized modification of data.'},
+  {t:'Repudiation', cat:'stride', why:'The R in STRIDE — denying an action with no proof otherwise.'},
+  {t:'Information disclosure', cat:'stride', why:'The I in STRIDE — exposing data to unauthorized parties. Compare to the LLM tile "sensitive information disclosure" — same idea, different named list.'},
+  {t:'Model denial of service', cat:'stride', why:'STRIDE\'s denial-of-service category, applied specifically to an AI model.'},
+  {t:'Elevation of privilege', cat:'stride', why:'The E in STRIDE — gaining higher permissions than granted.'}
+];
+const PBQ_SORT_COLS=[{k:'owasp',name:'OWASP Top 10'},{k:'llm',name:'OWASP Top 10 LLM'},{k:'stride',name:'STRIDE'}];
+let PSORT=null;
+function psortNew(){
+  const items=gShuffle(PBQ_SORT_BANK).slice(0,12);
+  PSORT={items:items, placed:{}, sel:null, right:0, wrong:0};
+}
+function psortSelect(i){
+  if(PSORT.placed[i]!=null) return;
+  PSORT.sel = (PSORT.sel===i? null : i);
+  SFX.play('click'); renderPsort();
+}
+function psortPlace(colKey){
+  if(PSORT.sel==null) return;
+  const i=PSORT.sel; const it=PSORT.items[i];
+  if(it.cat===colKey){ PSORT.placed[i]=colKey; PSORT.right++; SFX.play('correct'); }
+  else { PSORT.wrong++; SFX.play('wrong'); PSORT.lastWrong={i:i, col:colKey}; }
+  PSORT.sel=null;
+  if(Object.keys(PSORT.placed).length===PSORT.items.length){
+    setBest('pbqSortBest', PSORT.right);
+    SFX.play('win');
+  }
+  renderPsort();
+}
+function renderPsort(){
+  if(!PSORT) psortNew();
+  const allDone = Object.keys(PSORT.placed).length===PSORT.items.length;
+  const main=gameHeader('PBQ Simulator — Framework Sort',
+    'Click a risk, then click the framework list it actually belongs to. Some terms look alike on purpose — read closely.',
+    ['SORTED: '+Object.keys(PSORT.placed).length+' / '+PSORT.items.length, 'CORRECT: '+PSORT.right, 'BEST: '+getBest('pbqSortBest')+' / 12']);
+
+  const pool=gEl('div','sort-pool');
+  PSORT.items.forEach((it,i)=>{
+    if(PSORT.placed[i]!=null) return;
+    const chip=gEl('div','sort-chip'+(PSORT.sel===i?' sel':''), it.t);
+    chip.onclick=()=>psortSelect(i);
+    pool.appendChild(chip);
+  });
+  if(pool.children.length===0){
+    pool.appendChild(gEl('span','g-stat','All items sorted.'));
+  }
+  main.appendChild(pool);
+
+  const cols=gEl('div','sort-cols');
+  PBQ_SORT_COLS.forEach(c=>{
+    const col=gEl('div','sort-col');
+    col.appendChild(gEl('h4',null,c.name));
+    PSORT.items.forEach((it,i)=>{ if(PSORT.placed[i]===c.k) col.appendChild(gEl('div','placed',it.t)); });
+    col.onclick=()=>psortPlace(c.k);
+    cols.appendChild(col);
+  });
+  main.appendChild(cols);
+
+  if(PSORT.lastWrong!=null){
+    const it=PSORT.items[PSORT.lastWrong.i];
+    const fb=gEl('div','g-fb bad');
+    fb.appendChild(gEl('b',null,'"'+it.t+'" is not '+PBQ_SORT_COLS.find(c=>c.k===PSORT.lastWrong.col).name+'. '));
+    fb.appendChild(document.createTextNode(it.why));
+    main.appendChild(fb);
+  }
+  if(allDone){
+    const fb=gEl('div','g-fb '+(PSORT.right===PSORT.items.length?'ok':'bad'));
+    fb.textContent='Board complete — '+PSORT.right+' correct on first placement, '+PSORT.wrong+' misses along the way.';
+    main.appendChild(fb);
+    main.appendChild(gBtn('New board','primary big',()=>{ psortNew(); renderPsort(); }));
+  } else {
+    main.appendChild(gBtn('New board','',()=>{ psortNew(); renderPsort(); }));
+  }
+}
+
+
 /* ============================== MASTER RENDER ============================== */
 function render(){
   stopGameTimers();
@@ -2391,6 +2601,8 @@ function render(){
   else if(CURRENT_VIEW==='pipeline'){ renderPipeline(); if(PIPE.phase==='play') startPipeTimer(); }
   else if(CURRENT_VIEW==='jeopardy') renderJeopardy();
   else if(CURRENT_VIEW==='wheel') renderWheel();
+  else if(CURRENT_VIEW==='pbqarch') renderPbqArch();
+  else if(CURRENT_VIEW==='pbqsort') renderPsort();
   else renderDay(CURRENT_VIEW);
 }
 
