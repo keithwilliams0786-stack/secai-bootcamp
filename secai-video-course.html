@@ -121,10 +121,10 @@ select, .rate-btn{
 <body>
 <div id="app">
   <aside id="pl">
-    <div class="brand">
+    <a class="brand" href="index.html" title="Back to home" style="text-decoration:none;color:inherit">
       <div class="brand-mark">CY0</div>
-      <div class="brand-text"><div class="t1">SECAI+ VIDEO COURSE</div><div class="t2">CY0-001 · WATCH &amp; LISTEN</div></div>
-    </div>
+      <div class="brand-text"><div class="t1">SECAI+ VIDEO COURSE</div><div class="t2">CY0-001 · WATCH &amp; LISTEN · <span style="color:var(--cyan,#5AC8FA)">← HOME</span></div></div>
+    </a>
     <div id="supportNote"></div>
     <div class="pl-progress">
       <div class="pl-progress-top"><span>Course progress</span><span id="plPct">0%</span></div>
@@ -226,14 +226,14 @@ ep('e01', 1, 1, '1.1', 'AI Types, Training, and Prompt Engineering',[
   ch('Agentic AI plans and executes multi-step tasks on its own','Agentic AI refers to systems that act as autonomous agents. They plan, reason, and execute multi-step tasks by breaking a complex goal into smaller sub-tasks, automating workflows that used to need constant human intervention. That is different from a chatbot, which is just a communication interface, and different from RAG, which is a data-retrieval method.'),
   ch('Epoch: one full pass through the training data','An epoch is one complete cycle where the entire training dataset passes through the model. Training usually runs many epochs to refine the model\u2019s accuracy.'),
   ch('Temperature controls creativity versus predictability','Temperature is a setting that controls how random or creative a model\u2019s output is. Low temperature gives focused, predictable answers. High temperature gives more varied, creative ones.'),
-  ch('Data augmentation fixes unbalanced training sets','If a threat-classification dataset is highly unbalanced, say ninety-nine percent normal traffic and one percent attacks, data augmentation creates synthetic or modified examples of that minority class so the model actually learns to recognize it.')
+  ch('Data balancing fixes unbalanced training sets','If a threat-classification dataset is highly unbalanced, say ninety-nine percent normal traffic and one percent attacks, the model can score well by calling everything normal. Data balancing fixes that, for example by down-sampling the majority class. Data augmentation, creating modified or synthetic examples, is a related tool, and synthetic samples should be tagged so they stay traceable.')
  ])
 ]),
 
 ep('e02', 1, 1, '1.2', 'Data Security and RAG Foundations',[
  sl('Data hygiene concepts',[
-  ch('Lineage: traceable history of data','Data lineage is the traceable history of where a piece of data came from and how it was transformed along the way.'),
-  ch('Provenance: origin and authenticity','Data provenance is specifically about the origin and authenticity of that data source.'),
+  ch('Lineage: every transformation the data went through','Data lineage records every transformation a dataset goes through: filtering, deduplication, normalization, and every other processing step before it reaches the model.'),
+  ch('Provenance: origin, licensing, and consent','Data provenance documents where data came from: who created it, when, under what license, and with what consent. Provenance is origin; lineage is transformations.'),
   ch('Integrity means data has not been improperly altered','Data integrity is the assurance that data has not been changed in an unauthorized or unintended way.'),
   ch('Cleansing removes errors and duplicates','Data cleansing is the process of removing errors, duplicates, and inconsistencies before that data is used to train or run a model.'),
   ch('Structured, semi-structured, and unstructured data, and watermarking','Structured data lives in tables and databases, highly organized and easy to secure. Semi-structured data, like emails or log files, has some structure but needs custom validation. Unstructured data, like free text, images, and video, is the hardest to govern and makes up most AI training data. Watermarking embeds a hidden signal in AI-generated or training content, so its origin can be proven later.')
@@ -268,11 +268,11 @@ ep('e04', 2, 2, '2.1', 'AI Threat-Modeling Resources',[
   ch('OWASP LLM Top 10: top risks for LLM applications','The OWASP LLM Top 10 lists the top risks specific to large language model applications, things like prompt injection and insecure output handling.'),
   ch('OWASP ML Security Top 10: broader ML risks','The OWASP Machine Learning Security Top 10 covers broader machine-learning risks that go beyond just language models.'),
   ch('MITRE ATLAS: the ATT&CK for adversarial AI','MITRE ATLAS is the adversarial-AI counterpart to MITRE ATT&CK. It catalogs real-world adversary tactics and techniques specifically against AI systems.'),
-  ch('MIT AI Risk Repository: broad academic risk database','The MIT AI Risk Repository is a broad, academic and industry-sourced database of AI risks across many categories, useful for governance-style framing.'),
+  ch('MIT AI Risk Repository: causal and domain taxonomies','The MIT AI Risk Repository is a broad database of AI risks. Its causal taxonomy sorts risks by entity, by whether they were intentional or unintentional, and by whether they arose before or after deployment. Its domain taxonomy groups risks into seven domains, such as Privacy and Security.'),
   ch('CVE AI Working Group: tracked, numbered vulnerabilities','The CVE AI Working Group extends the standard CVE vulnerability tracking process specifically to AI vulnerabilities.'),
-  ch('STRIDE separates deliberate attacks from accidental failures','STRIDE stands for Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, and Elevation of privilege. It is a general security framework, not AI-specific, and it is especially useful for distinguishing a deliberate adversarial attack from an accidental, unintentional protocol failure.'),
+  ch('STRIDE categorizes threat types','STRIDE stands for Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, and Elevation of privilege. It is a general, not AI-specific, way to categorize threat types. It does not separate intentional from accidental risk; that is the MIT causal taxonomy.'),
   ch('MAESTRO covers multi-agent AI systems specifically','MAESTRO is the Cloud Security Alliance\u2019s framework for Multi-agent Environment, Security, Threat, Risk, and Outcome. It exists because multiple AI agents cooperating introduces threat complexity that single-model frameworks were not built to handle.'),
-  ch('Exam angle: match the described weakness to the right catalog','On the exam, you will be given a description of a weakness or need, and asked to pick which framework or resource actually models it. Distinguishing intentional attacks from accidental gaps points to STRIDE. Multiple cooperating agents points to MAESTRO.')
+  ch('Exam angle: match the described weakness to the right catalog','On the exam, you will be given a description of a weakness or need, and asked to pick which framework or resource actually models it. Classifying risks as intentional versus unintentional, or pre- versus post-deployment, points to the MIT AI Risk Repository. Multiple cooperating agents points to MAESTRO.')
  ])
 ]),
 
@@ -449,25 +449,25 @@ ep('e12', 4, 3, '3.3', 'Using AI to Automate Security Tasks',[
 
 ep('e13', 4, 4, '4.1', 'Governance Structures That Support AI',[
  sl('Three governance structures, not just one',[
-  ch('Centralized Center of Excellence','A centralized Center of Excellence is one team that sets standards, manages the platform, and supports project teams directly.'),
-  ch('Hub-and-spoke: the mature evolution','As AI programs mature, many organizations shift to hub-and-spoke. The Center of Excellence becomes the hub, providing shared resources and oversight, while individual business units, the spokes, drive their own execution.'),
-  ch('Embedded: fastest, but riskiest for consistency','The embedded model puts AI roles fully inside product teams, with only a light central coordination layer. The trade-off is real: faster delivery, but a higher risk of duplicated effort and inconsistent controls across teams.'),
+  ch('Centralized Center of Excellence','A centralized Center of Excellence handles most AI development and all governance in one team. It suits small or highly regulated organizations, at the cost of slower delivery and bottlenecks.'),
+  ch('Hybrid, also called hub-and-spoke: the most common','In the hybrid model, often described as hub-and-spoke, the Center of Excellence provides central platforms, policies, and approval gates, while business units build their own solutions inside those boundaries. It is the most common model because it balances control and speed.'),
+  ch('Federated: fastest, but riskiest for consistency','The federated model places AI developers inside each business unit, with the Center of Excellence acting only as a standards and assurance function. The trade-off is real: faster delivery, but a higher risk of duplicated effort and inconsistent controls across teams.'),
   ch('Policies and procedures formalize acceptable AI use','AI policies and procedures are the formal, documented rules governing acceptable AI use, development, and deployment.')
  ]),
  sl('The expanding cast of AI roles',[
-  ch('Data scientist and data engineer are two different jobs','A data scientist builds and analyzes models and data pipelines. A data engineer is a distinct role: they build and maintain the data pipelines themselves, and own data quality and data lineage for training datasets specifically.'),
+  ch('Data scientist and data engineer are two different jobs','A data scientist frames the problem, explores the data, engineers features, and builds baseline models. A data engineer is a distinct role: they build and maintain the pipelines that acquire, clean, label, and deliver quality-controlled data, and they own data lineage for training datasets.'),
   ch('AI architect and ML engineer','An AI architect designs the overall system architecture. An ML engineer builds and productionizes those models.'),
   ch('MLOps engineer owns the operational pipeline','An MLOps engineer owns the operational health of the deployment and monitoring pipeline, essentially the ML equivalent of a DevOps engineer.'),
   ch('AI security architect, governance engineer, risk analyst, and auditor','An AI security architect designs security controls specific to AI systems. An AI governance engineer implements governance tooling and process. An AI risk analyst assesses and quantifies AI risk, often conducting privacy impact assessments before a project is even approved. And an AI auditor independently reviews AI systems for compliance and quality.'),
-  ch('Exam angle: match the responsibility to the right role','Expect questions asking who is responsible for a specific task, so know these roles by their actual job, not just their title. And if a scenario describes a fully decentralized structure with minimal central coordination, that is the embedded model, and its named risk is duplicated effort, not slow delivery.')
+  ch('Exam angle: match the responsibility to the right role','Expect questions asking who is responsible for a specific task, so know these roles by their actual job, not just their title. And if a scenario describes developers inside each business unit with the Center of Excellence only setting standards, that is the federated model, and its named risk is inconsistent controls and duplicated effort, not slow delivery.')
  ])
 ]),
 
 ep('e14', 5, 4, '4.2', 'Risks Associated with AI',[
- sl('Responsible-AI principles — eight of them, not seven',[
+ sl('Responsible-AI principles, including consistency',[
   ch('Fairness, reliability and safety, transparency, privacy','The responsible-AI principles are fairness, reliability and safety, transparency, and privacy.'),
   ch('Explainability, inclusiveness, and accountability','Along with explainability, inclusiveness, and accountability.'),
-  ch('Consistency: the principle most study materials leave off entirely','And there is an eighth principle, one that shorter study materials frequently leave off the list entirely: consistency. Consistency means a model behaves predictably given similar inputs, not just accurately. Every practical risk on this list ultimately traces back to violating one of these eight principles.')
+  ch('Consistency: easy to forget, still tested','Do not forget consistency, which shorter lists sometimes leave off. Consistency means a model delivers stable, predictable results across similar inputs, user groups, and deployment scenarios, not just accurate ones. Sustainability, the energy and hardware cost of large models, also appears in some lists. Every practical risk on this list traces back to violating one of these principles.')
  ]),
  sl('The practical risk list',[
   ch('Bias introduction and accidental data leakage','Bias introduction happens when outputs systematically disadvantage a group. Accidental data leakage happens when sensitive data is unintentionally surfaced in output.'),
@@ -496,15 +496,186 @@ ep('e15', 5, 4, '4.3', 'Compliance Impact on AI Use and Development',[
  ])
 ]),
 
-ep('e16', 5, 0, 'CLOSE', 'Exam Strategy and the Go/No-Go Decision',[
+
+ep("g01", 6, 3, "GAP 3.1", "Gap Review: Picking the Right AI Tool",[
+ sl("Why this episode exists",[
+  ch("Tool selection was the weakest area on your CertMaster results","This gap review episode exists because matching a use case to the right AI tool was the single weakest area on your CertMaster results. The exam describes a situation and asks which tool type fits. The fix is a simple mental lookup table, and this episode builds it.")
+ ]),
+ sl("The six tool types",[
+  ch("IDE plug-in: help while code is being written","An I D E plug-in lives inside the developer's editor. Pick it when the scenario says as code is written: linting, insecure-pattern warnings, completion, refactoring, or explaining a block of code, all without copying anything into another window."),
+  ch("CLI plug-in: anything at the terminal","A C L I plug-in lives at the command line. Pick it for generating and explaining complex commands, running scripts over log files, matching signatures in packet captures on the same host, or driving penetration-testing frameworks and scanners from the shell."),
+  ch("Chatbot: conversation, translation, summarization","A chatbot is the conversational choice. Pick it for question and answer, translating and summarizing reports into a manager's native language, or walking a team step by step through a threat model while asking clarifying questions."),
+  ch("Personal assistant: tracking, tasks, playbooks, status","A personal assistant is the coordinator. Pick it when the scenario talks about tracking completion of incident response procedures, assigning tasks, triggering playbooks, or giving the whole team a case status summary on request."),
+  ch("Browser plug-in: protection while users browse","A browser plug-in protects people while they browse. Pick it for warning users about phishing pages and fraudulent URLs as they use web apps and financial portals."),
+  ch("MCP server: agents sharing context with back-end streams","A Model Context Protocol server, or M C P server, lets AI agents and tools share context and state in a structured way, and connect to back-end streams like real-time card transactions. Its signature risk is context leakage between agents, so pair it with access control, logging, and encryption.")
+ ]),
+ sl("Exam traps",[
+  ch("Linting is code quality; SAST is security flaws","Do not confuse linting with static application security testing. Linting checks code quality and standards. S A S T finds security flaws like injection and cross-site scripting."),
+  ch("Test every AI tool in a controlled environment first","Any AI tool that writes code or commands can hallucinate something insecure or destructive, so the correct answer usually includes testing it in a controlled environment before production use, and keeping humans accountable for the output."),
+  ch("Key phrase lookup","Quick lookup. As code is written: I D E. At the terminal: C L I. Summarize or translate: chatbot. Track procedures and update the team: personal assistant. While browsing: browser plug-in. Agents sharing context: M C P.")
+ ])
+]),
+
+ep("g02", 6, 1, "GAP 1.1", "Gap Review: Choosing the ML Technique",[
+ sl("Labels decide the family",[
+  ch("Labels exist: supervised learning","Start every machine-learning scenario with one question: are there trustworthy labels? If yes, it is supervised learning. Gradient-boosted decision trees are many small trees trained in sequence, each correcting the previous trees' mistakes, and they are excellent at scoring with hundreds of fine-grained signals."),
+  ch("No labels: unsupervised anomaly detection","If there are no reliable labels, such as zero-days, insider activity, or a brand-new cloud workload, it is unsupervised learning. Clustering maps normal groupings. An autoencoder learns to rebuild normal records, so a high reconstruction error means the record is anomalous."),
+  ch("Isolation Forest: few cuts means outlier","An Isolation Forest makes random cuts through the data. Records that can be isolated with very few cuts are outliers. Remember: few cuts, flag it."),
+  ch("Pick by constraint, too","A convolutional neural network can read raw executable bytes to spot packed malware. Logistic regression is the pick when auditors must be able to explain and defend every decision. And once an analyst confirms an unsupervised anomaly, that labeled record becomes training data for future supervised models.")
+ ]),
+ sl("Validation and metrics",[
+  ch("Training, validation, and test sets","The training set teaches the model, the validation set tunes it, and the test set gives the final, unbiased estimate. K-fold cross-validation rotates which fold is held out and averages the scores, so you do not depend on one lucky split."),
+  ch("Precision versus recall, with numbers","Precision is the share of flagged items that were truly bad. If a model flags two hundred files and one hundred fifty are malicious, precision is seventy-five percent. Recall is the share of all bad items that were caught. If ninety of one hundred twenty intrusions are caught, recall is seventy-five percent. F1 balances the two.")
+ ]),
+ sl("Reinforcement, federated, and weak supervision",[
+  ch("Reinforcement learning: rewards, penalties, then shadow mode","Reinforcement learning uses rewards and penalties. Negative rewards for blocking legitimate traffic or adding latency teach the agent to balance protection against user impact. Before it enforces anything, run it in shadow mode, where it recommends actions next to analysts so you can compare."),
+  ch("Federated learning: the model goes to the data","Federated learning sends the model to the data, so hospitals or devices never move raw records. The added risk is rogue clients sending poisoned updates. Secure aggregation means the server only sees the combined average, never one client's contribution."),
+  ch("Weak supervision is fast but noisy","Weak supervision auto-labels data from rules, sandbox verdicts, and threat feeds. It is fast but noisy, so the fix is regular human label audits and down-weighting low-trust sources.")
+ ]),
+ sl("Prompting pitfalls",[
+  ch("Zero-shot, one-shot, multi-shot risks","Treat a zero-shot answer as a hypothesis to validate. One-shot prompting can overfit to that single example. Multi-shot costs more tokens and can leak proprietary indicators, so redact customer data first."),
+  ch("Context, perspective, and output shape","A strong prompt has context, perspective, and output shape. If a SOAR playbook breaks because fields are missing, the prompt was missing its output shape. Templates with sanitized placeholders give consistent fields and keep secrets out.")
+ ])
+]),
+
+ep("g03", 6, 1, "GAP 1.2", "Gap Review: Data Integrity and the Life Cycle",[
+ sl("Correction: lineage versus provenance",[
+  ch("Provenance: origin, license, and consent","Earlier, this course blurred two terms, so here is the correction. Provenance answers where data came from: who created it, under what license, and with what consent."),
+  ch("Lineage: every transformation along the way","Lineage answers what happened to it: every filtering, deduplication, normalization, and transformation step before training. For retrieval content, save the source URL, timestamp, content hash, and license per item so a poisoned source can be pulled out quickly.")
+ ]),
+ sl("Integrity controls",[
+  ch("Data verification: hash, store read-only, recheck","Data verification means hashing every approved dataset, storing those hashes in a read-only location, and recomputing them before every training job, failing the job on any mismatch."),
+  ch("Signatures and append-only ledgers across organizations","When data moves between organizations, digitally sign each archive and record its hash on an append-only ledger, so receivers can confirm it arrived unchanged and regulators can audit it."),
+  ch("Correction: balancing fixes a skewed class split","Another correction. When benign traffic is ninety-nine percent of the data and the model calls everything safe, the fix the exam wants is data balancing, for example down-sampling the majority class. Tag any augmented, synthetic samples so they stay traceable."),
+  ch("Cleansing, secrets scanning, and tenant isolation","Clean and standardize data, because missing time zones or subnet masks create false lateral-movement alerts. Scan semi-structured files like JSON and YAML for embedded secrets. And in a shared vector store, tenant isolation stops one department from retrieving another department's privileged documents.")
+ ]),
+ sl("The six-stage life cycle",[
+  ch("Design, then data, then development","CertMaster uses six stages. Design is where goals, risk appetite, threat modeling, and compliance obligations start. Then data collection and preparation. Then model development and training."),
+  ch("Deployment, operation, then maintenance","Deployment and integration includes canary or blue-green rollouts on a small slice of traffic. Operation and inference is runtime monitoring for drift and latency spikes. Monitoring and maintenance means red-teaming, patching libraries, revisiting the threat model, and retraining, then looping back to design."),
+  ch("Intake trust: signed sources and heartbeats","At intake, establish authenticity with signed sources, chain of custody, and allow-listed crawler domains. Verify crowd-sourced labelers and score their quality. Use signed heartbeats with sequence numbers so a silent sensor is not mistaken for a quiet network.")
+ ])
+]),
+
+ep("g04", 6, 2, "GAP 2.4", "Gap Review: Privacy-Enhancing Technologies",[
+ sl("Computing on protected data",[
+  ch("Homomorphic encryption: compute while encrypted","Homomorphic encryption lets you compute on data while it stays encrypted, so even the processor never sees cleartext. If a scenario says researchers must never see records in cleartext, even during computation, this is the answer."),
+  ch("Trusted execution environments protect data in use","A trusted execution environment, or secure enclave, is isolated hardware that protects data while it is processed, even from the host operating system and other tenants. Homomorphic encryption and enclaves are the two data-in-use answers.")
+ ]),
+ sl("Differential privacy",[
+  ch("Add calibrated noise so only trends remain","Differential privacy adds calibrated noise, such as randomly adjusting each age by a few years, so the model learns the trend without exposing any individual."),
+  ch("DP-SGD clips gradients and adds noise","D P S G D, differentially private stochastic gradient descent, clips each training example's gradient and adds noise. More noise means more privacy and less accuracy. It is a direct defense against membership inference.")
+ ]),
+ sl("Masking, minimization, and redaction",[
+  ch("Masking is for development and test data","Data masking replaces real values with fictional ones when the real content is not needed, usually for development and testing. Static masking creates a separate masked copy. Dynamic masking hides values at query time while the stored data stays unchanged."),
+  ch("Minimization happens before collection; redaction after","Minimization happens before or during collection: if you only need a birth month, only collect the month. Redaction removes data after it was collected, like stripping phone numbers from generated case summaries."),
+  ch("Keys, transport, and DLP","Store keys in a K M S or H S M, separate from the data. Use T L S one point three or newer in transit. And data loss prevention only works when the organization has clear classification labels to begin with.")
+ ])
+]),
+
+ep("g05", 6, 2, "GAP 2.1", "Gap Review: Threat-Modeling Resources",[
+ sl("Correction: STRIDE",[
+  ch("STRIDE categorizes threat types, nothing more","Correction time. Earlier, this course said STRIDE separates deliberate attacks from accidental failures. It does not. STRIDE simply categorizes threat types: spoofing, tampering, repudiation, information disclosure, denial of service, and elevation of privilege."),
+  ch("Intentional versus unintentional is the MIT causal taxonomy","The resource that classifies risks by intent and timing is the MIT AI Risk Repository's causal taxonomy. It sorts risks by entity, by whether they were intentional or unintentional, and by whether they arose before or after deployment. It also has a domain taxonomy of seven domains, such as Privacy and Security.")
+ ]),
+ sl("Which resource for which need",[
+  ch("AVID: failure modes before you deploy","The AI Vulnerability Database, or AVID, is an open knowledge base of failure modes for models, datasets, and systems. Check it before you deploy a component."),
+  ch("AI Incident Database: real-world harms","The AI Incident Database collects real cases where deployed AI caused harm, such as deepfake fraud or biased decisions, so you can study patterns."),
+  ch("arXiv, CWE, and the CVE AI Workgroup","arXiv is where the newest research appears first. C W E maps findings to standard weaknesses, like prompt injection to C W E seventy-seven. And the CVE AI Workgroup assigns tracked identifiers to specific AI vulnerabilities."),
+  ch("OWASP lists and MITRE ATLAS","The OWASP Top 10 for LLM Applications covers items like vector and embedding weaknesses and misinformation. The OWASP Machine Learning Security Top 10 includes items like transfer learning attacks. MITRE ATLAS maps adversary tactics across the M L pipeline.")
+ ]),
+ sl("The threat-modeling process",[
+  ch("Gather first, then choose frameworks","First gather the use case, architecture, data collected and processed, users, and deployment. Include legal and compliance and the AI architect alongside security. Then choose the frameworks that fit."),
+  ch("Identify, rate, report, reassess","Identify threats by thinking like an attacker, then rate each by likelihood and business impact to decide what to fix first. Report to stakeholders, and reassess throughout the development life cycle.")
+ ])
+]),
+
+ep("g06", 6, 2, "GAP 2.2", "Gap Review: Gateway Controls and Quotas",[
+ sl("Guardrail types",[
+  ch("Redaction, secrets, and intent","A P I I or P C I redaction guardrail masks personal and card data in both directions. A secrets detection guardrail catches API keys, tokens, and internal URLs. An intent detection guardrail blocks requests outside the approved use case, like a banking bot asked for investment advice."),
+  ch("Injection, malware, and phishing","An injection attacks prevention guardrail sanitizes cross-site scripting and server-side request forgery patterns in output. Malware and phishing detection guardrails catch malicious links and look-alike login pages. All of these can be centralized in a prompt firewall at the gateway.")
+ ]),
+ sl("Limits and quotas",[
+  ch("Rate, session, and token limits","A rate limit caps requests in a short window. A session-based limit caps a long-lived conversation that never trips the per-minute limit. Token limits cap the size of prompts and responses, which also stops instructions buried in thousands of tokens of filler."),
+  ch("Input quotas versus quantity quotas","An input quota caps total data or requests over days, weeks, or months. A quantity quota caps the number of files or items processed. A modality limit decides which input types are allowed, and is the fastest way to switch off a vulnerable image feature for every product at once."),
+  ch("Virtual keys and retries","Replace one shared master key with scoped, expiring virtual keys per app or user that can be revoked individually. And make retries count against rate limits, or a brief outage turns into a synchronized retry storm.")
+ ]),
+ sl("Model evaluation by source",[
+  ch("In-house, open-source, and vendor models differ","For an in-house model, review everything. For an open-source pre-trained model, focus on training data integrity, embedded bias, and policy alignment. For a vendor API where you cannot see weights or data, audit external assurances: SOC 2, pen tests, ISO attestations, and contract terms.")
+ ])
+]),
+
+ep("g07", 6, 2, "GAP 2.6", "Gap Review: Model Attacks You Missed",[
+ sl("Backdoor versus trojan",[
+  ch("Backdoor: a trigger planted through poisoned data","A backdoor is a hidden trigger, like a sticker, pixel pattern, or phrase, planted through poisoned training data. The model behaves normally until the trigger appears, then misclassifies on command."),
+  ch("Trojan: malicious code inside the model package","A trojan is malicious code hidden inside the model package. The outputs can look perfectly accurate while it quietly copies uploads to an attacker's server in the background. Trigger in the data: backdoor. Code in the package: trojan.")
+ ]),
+ sl("Theft, inversion, and inference",[
+  ch("Detecting extraction without punishing customers","To detect model theft through the API, use per-source rate limits, watch for systematically varied queries, and auto-throttle. A honey endpoint that no real application uses is a tripwire: any large-scale querying of it signals extraction. Watermark outputs so you can prove a clone later."),
+  ch("Inversion and membership inference","Model inversion reconstructs details about individuals in the training data, reduced by limiting sensitive training data and generalizing outputs. Membership inference asks whether one record was in training, and it thrives on overfitting, precise confidence scores, and unmonitored queries.")
+ ]),
+ sl("Skew, poisoning, and outputs",[
+  ch("Segment failures: compare distributions first","If a fraud model suddenly approves fraud in one merchant category in one region while overall accuracy looks fine, the first step is to compare recent feature and label distributions against historical baselines."),
+  ch("Poisoning detection and schema validation","Detect poisoning with similarity scoring against trusted data and reproducibility checks. Validate structured output against a strict schema, and treat a spike in rejected fields as a real alarm."),
+  ch("Output executed without validation is the real issue","In many incidents labeled prompt injection, the true root cause is that model output was executed without validation. Treat the model as an untrusted client and gate every high-impact action.")
+ ])
+]),
+
+ep("g08", 6, 2, "GAP 2.5", "Gap Review: Testing, Monitoring, and Oversight",[
+ sl("Control testing methods",[
+  ch("Leakage, indirect injection, and excessive agency","Ask a bot what it was told never to say, and if it lists its instructions, that is system prompt leakage. Planted text in a fetched page that the bot repeats is indirect prompt injection. A destructive action that runs with no confirmation is excessive agency."),
+  ch("Bias, supply chain, and guardrail bypass","Change only one attribute, like a ZIP code or gender, and watch the outcome flip: that is bias testing with counterfactual inputs. A downloaded model producing unknown external links is a supply chain finding. A fictional story that reveals a real password is guardrail bypass.")
+ ]),
+ sl("Monitoring quality",[
+  ch("Canary prompts and golden datasets","Canary prompts are fixed prompts run on a schedule to confirm answers stay accurate, safe, and within policy. A golden dataset is a trusted set of known-correct examples you rerun after every update. Grounding checks tie answers back to trusted sources."),
+  ch("ROUGE, BLEU, and ROC AUC","ROUGE scores summaries and tolerates paraphrasing. BLEU measures word overlap, mostly for translation. R O C A U C measures how well a classifier separates two classes."),
+  ch("Cost per completed task and LRU eviction","Cost per successfully completed task captures quality and spend in one number. Least recently used eviction removes the oldest, least accessed embeddings from a full vector database.")
+ ]),
+ sl("Logs, access, and rule actions",[
+  ch("Log the right things and protect them","Log input prompts, responses, and token usage per user, never plaintext passwords or card numbers. Protect logs with read-only permissions and remote copies users cannot reach."),
+  ch("Break-glass and matching rule actions to policy","Emergency elevated access should be a logged break-glass workflow that revokes itself afterward. And match the rule action to policy: if policy wants analyst visibility without blocking legitimate questions, the answer is flag and alert, not block and log.")
+ ])
+]),
+
+ep("g09", 6, 4, "GAP 4.x", "Gap Review: Drift, Governance, and Oversight Models",[
+ sl("Drift and maintenance",[
+  ch("Monitor against baselines, plan retraining and rollback","Manage accuracy decline by monitoring live inputs and outputs against baselines, with planned retraining and a rollback path. Do not wait for complaints, do not freeze the model forever, and do not raise the temperature."),
+  ch("Missing cases are not attacks","If a model flags normal weekend shopping as suspicious and there is no tampering, the training data simply omitted key cases. Profile the data, fill the gaps, and test on real distributions.")
+ ]),
+ sl("Corrected Center of Excellence models",[
+  ch("Centralized, federated, and hybrid","Use these names. Centralized: one team does most development and all governance, good for small or highly regulated organizations. Federated: developers sit in business units, and the center sets standards and provides assurance, with the risk of inconsistent controls and duplicated effort. Hybrid, similar to hub-and-spoke: central platforms and approval gates, with units building inside those boundaries. Hybrid is the most common."),
+  ch("First step in a new AI GRC program","When standing up an AI governance program from scratch, the first move is to publish a concise AI policy and inventory existing AI uses. Automation and third-party validation come later in the maturity roadmap.")
+ ]),
+ sl("Roles and oversight models",[
+  ch("Corrected: data scientist versus data engineer","Another correction. A data engineer builds the pipelines that acquire, clean, label, and deliver quality data. A data scientist frames the problem, engineers features, and builds baseline models. The M L engineer productionizes, the platform engineer runs shared infrastructure, and the AI governance engineer codifies approvals and evidence."),
+  ch("Human-in-the-loop versus human-on-the-loop","Human-in-the-loop means the AI proposes and a person decides. Human-on-the-loop means the AI decides routine cases while humans monitor and can reverse them. And human oversight means reviewing results against tolerances with authority to suspend automation."),
+  ch("Three lines of AI risk","AI risk is attributed along three lines: the business context and impact of AI decisions, data and model behavior, and operations and oversight. Extensive testing before release means accuracy tests, fairness checks across groups, stress tests, and red-teaming.")
+ ])
+]),
+
+ep("g10", 6, 0, "GAP", "Gap Review: Brain Dump and Exam-Day Routine",[
+ sl("Use the tutorial minutes",[
+  ch("The tutorial time does not count against your sixty minutes","The exam tutorial time does not count toward your sixty minutes. Use those minutes to write your brain dump on the scratch pad before the first question appears."),
+  ch("Practice the sheet until it takes under two minutes","The bootcamp app has a Brain Dump sheet and a timed drill. Practice until you can recall at least ninety percent of it in under two minutes, twice.")
+ ]),
+ sl("What goes on the sheet",[
+  ch("Tool lookup and ML family","Write the tool lookup: as code is written, I D E; terminal, C L I; summarize, chatbot; track and update, personal assistant; browsing, browser plug-in; agents sharing context, M C P. Then: labels, supervised; no labels, unsupervised; few cuts, Isolation Forest."),
+  ch("Provenance, lineage, and privacy tech","Provenance is origin; lineage is transformations. Computing while encrypted is homomorphic. Noise is differential privacy. Masking is for development and testing. Minimization comes before collection, redaction after."),
+  ch("Backdoor, trojan, and the MIT taxonomy","Trigger in the data is a backdoor; code in the package is a trojan. Intentional versus unintentional is the MIT causal taxonomy, not STRIDE.")
+ ]),
+ sl("Pacing",[
+  ch("Skip PBQs first, then come back","Flag the performance-based questions and answer the multiple choice first, then return to the PBQs with the time you banked. Aim to have every item answered with at least five minutes left, which is the same pacing check your readiness tracker uses.")
+ ])
+]),
+
+ep('e16', 6, 0, 'CLOSE', 'Exam Strategy and the Go/No-Go Decision',[
  sl('Your study order should follow the weighting',[
   ch('Domain 2 first and deepest: forty percent of the exam','Securing AI Systems is forty percent of the exam and carries the most scenario-based questions. It deserves the most of your remaining review time.'),
   ch('Domain 3 and 4 next: another forty-three percent combined','AI-assisted Security and Governance, Risk, and Compliance together make up another forty-three percent. Domain 3 rewards hands-on familiarity with AI tooling. Domain 4 rewards practicing scenarios, not memorizing regulation text.'),
   ch('Domain 1 runs in the background as vocabulary','Basic AI Concepts is vocabulary. Review it for orientation, then reinforce it with flashcards rather than dedicating heavy blocks of time to it.')
  ]),
  sl('Go, or no-go?',[
-  ch('Go if: simulation score is comfortably above the passing bar','Book the real exam if your practice simulation score sits comfortably above the six hundred passing threshold, with margin, not just barely over it.'),
-  ch('Go if: no objective is self-rated below a two','Book it if none of the fifteen sub-objectives are still sitting at a self-rating of one in your tracker.'),
+  ch('Go if: every question seen, and ninety percent sustained','Book the real exam when the Readiness tracker in the bootcamp app is green: you have seen every question in the regular bank at least once, and your last three practice tests average ninety percent or better, with strong first-attempt accuracy.'),
+  ch('Go if: the weak-areas final and the fresh mock both pass','Then pass the gated weak-areas final, drawn from questions you have never seen on the topics you missed most, and a balanced fresh mock at ninety percent, finishing with time to spare.'),
   ch('Go if: you can explain the attack-to-control mapping from memory','And book it if you can explain the attack-to-control mapping for at least eight of the eleven attack types in objective 2.6, from memory, without looking anything up.'),
   ch('If you are not there yet, that is fine, keep drilling','If you are not there yet, that is completely fine. Go back through your weakest domain, rerun the attack-to-control matching drill, and take the practice simulation again before you schedule anything.'),
   ch('You have covered the full blueprint. Good work.','Either way, you have now covered every domain and every sub-objective on the real CY0-001 blueprint. That is the whole game. Go get it.')
@@ -516,10 +687,10 @@ ep('e16', 5, 0, 'CLOSE', 'Exam Strategy and the Go/No-Go Decision',[
 const STORE_KEY='secai-video-progress-v1';
 let STATE={ completed:{}, rate:1, voiceURI:null, autoplay:true };
 async function loadState(){
-  try{ const r=await window.storage.get(STORE_KEY,false); if(r&&r.value) STATE=Object.assign(STATE, JSON.parse(r.value)); }catch(e){}
+  try{ const v=localStorage.getItem(STORE_KEY); if(v) STATE=Object.assign(STATE, JSON.parse(v)); }catch(e){}
 }
 let saveTimer=null;
-function saveState(){ clearTimeout(saveTimer); saveTimer=setTimeout(async ()=>{ try{ await window.storage.set(STORE_KEY, JSON.stringify(STATE), false);}catch(e){} },300); }
+function saveState(){ clearTimeout(saveTimer); saveTimer=setTimeout(async ()=>{ try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }catch(e){} },300); }
 
 /* ============================== PLAYER STATE ============================== */
 let curEp=0, curSlide=0, curChunk=0;
@@ -555,13 +726,13 @@ function renderPlaylist(){
     if(e.day!==lastDay){
       lastDay=e.day;
       const h=document.createElement('div'); h.className='dayhead';
-      h.textContent = e.day===0? 'Start Here' : 'Day '+e.day;
+      h.textContent = e.day===0? 'Start Here' : e.day===6? 'Gap Review & Exam Strategy' : 'Day '+e.day;
       pl.appendChild(h);
     }
     const row=document.createElement('div'); row.className='ep'+(i===curEp?' active':'');
     const dotCls = i===curEp && isPlaying ? 'dot playing' : STATE.completed[e.id] ? 'dot done' : 'dot';
     row.innerHTML = '<span class="num mono">'+(i+1)+'</span><span class="'+dotCls+'"></span>'+
-      '<div class="meta"><div class="ttl">'+e.title+'</div><div class="sub">'+(e.code!=='CLOSE'&&e.code!=='INTRO'? 'Obj '+e.code : e.code)+'</div></div>';
+      '<div class="meta"><div class="ttl">'+e.title+'</div><div class="sub">'+(/^[0-9]/.test(e.code)? 'Obj '+e.code : e.code)+'</div></div>';
     row.onclick=()=>loadEpisode(i,true);
     pl.appendChild(row);
   });
@@ -572,7 +743,7 @@ function renderScreen(){
   const e = EPISODES[curEp];
   const chunks = flatChunks(e);
   const cur = chunks[curChunk] || chunks[0];
-  document.getElementById('epCode').textContent = (e.code==='CLOSE'||e.code==='INTRO') ? e.code : 'OBJECTIVE '+e.code;
+  document.getElementById('epCode').textContent = /^[0-9]/.test(e.code) ? 'OBJECTIVE '+e.code : e.code;
   document.getElementById('epTitle').textContent = e.slides[cur.si].heading;
 
   const bWrap=document.getElementById('bullets');
